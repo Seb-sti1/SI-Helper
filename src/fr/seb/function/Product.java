@@ -46,8 +46,6 @@ public class Product implements Expression<Variable> {
             }
         }
 
-
-
         return new Product(a.calcul(), b.calcul());
     }
 
@@ -61,9 +59,7 @@ public class Product implements Expression<Variable> {
 
     @Override
     public Expression<Variable> derive(int recursionDepth, Space R) {
-        if (recursionDepth == 0) {
-            return this;
-        } else if (recursionDepth == 1) {
+        if (recursionDepth == 1) {
 
             return new Addition<>(new Product(new Derivation<>(a, R), b), new Product(a, new Derivation<>(b, R)));
         } else {

@@ -33,9 +33,7 @@ public class Cos implements Expression<Variable> {
 
     @Override
     public Expression<Variable> derive(int recursionDepth, Space R) {
-        if (recursionDepth == 0) {
-            return this;
-        } else if (recursionDepth == 1) {
+        if (recursionDepth == 1) {
             return new Product(new Derivation<>(child, R), new Product(new Scalar<>(-1), new Sin(child)));
         } else {
             return new Product(child.derive(recursionDepth - 1, R), new Product(new Scalar<>(-1), new Sin(child)));

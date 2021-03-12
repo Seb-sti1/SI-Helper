@@ -24,12 +24,6 @@ public class Addition<T> implements Expression<T> {
 
     @Override
     public Expression<T> calcul() {
-        /*
-        Si 2 nombre
-        Si addiction
-        si Quotient
-
-         */
 
         if (left.calcul() instanceof Scalar && ((Scalar<T>) left.calcul()).n == 0) { // remove addition of zero
             return right.calcul();
@@ -57,9 +51,7 @@ public class Addition<T> implements Expression<T> {
 
     @Override
     public Expression<T> derive(int recursionDepth, Space R) {
-        if (recursionDepth == 0) {
-            return this;
-        } else if (recursionDepth == 1) {
+        if (recursionDepth == 1) {
             return new Addition<>(new Derivation<>(left, R), new Derivation<>(right, R));
         } else {
             return new Addition<>(left.derive(recursionDepth - 1, R), right.derive(recursionDepth - 1, R));

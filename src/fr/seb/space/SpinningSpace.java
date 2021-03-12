@@ -1,12 +1,16 @@
 package fr.seb.space;
 
 import fr.seb.Expression;
+import fr.seb.Utils;
 import fr.seb.function.*;
 import fr.seb.vectors.Point;
 import fr.seb.vectors.Variable;
 import fr.seb.vectors.Vector;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 
 import static fr.seb.space.Space.VECTOR.*;
 
@@ -23,6 +27,8 @@ public class SpinningSpace implements Space {
     final VECTOR spinning;
 
     final int id;
+
+    final private String s;
 
     /**
      * Create a new space rotation around of fixeR1 in father. the angle is between angleFather and angleR2.
@@ -85,13 +91,22 @@ public class SpinningSpace implements Space {
         Expression<Vector> secondSpinningR2 = new Addition<>(new ScalarProduct(new Product(new Scalar<>(-1), new Sin(angle)), firstSpinningFather),
                 new ScalarProduct(new Cos(angle), secondSpinningFather));
 
+        VECTOR secondAngle;
         if (x.getExpression() == null) {
             x.setExpression(secondSpinningR2);
+            secondAngle = X;
         } else if (y.getExpression() == null) {
             y.setExpression(secondSpinningR2);
+            secondAngle = Y;
         } else {
             z.setExpression(secondSpinningR2);
+            secondAngle = Z;
         }
+
+        s = String.format(Utils.projectionFigure,
+                firstSpinningFather.toString(), secondSpinningFather.toString(), father.getUnitaryVector(fixedFather),
+                getUnitaryVector(spinning).toString(), getUnitaryVector(angleR2).toString(), getUnitaryVector(secondAngle).toString(),
+                angle.toString(), angle.toString());
 
     }
 
@@ -140,6 +155,11 @@ public class SpinningSpace implements Space {
     @Override
     public Expression<Vector> getRotationVector() {
         return new ScalarProduct(angle.derive(null), this.getUnitaryVector(this.spinning));
+    }
+
+    @Override
+    public String toString() {
+        return s;
     }
 
 }

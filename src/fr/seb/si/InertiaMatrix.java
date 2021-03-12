@@ -1,10 +1,14 @@
+/*
+ * Copyright (c) 2021. Sébastien Kerbourc'h. See LICENSE for more information.
+ */
+
 package fr.seb.si;
 
 import fr.seb.Expression;
 import fr.seb.Utils;
 import fr.seb.function.Addition;
+import fr.seb.function.Power;
 import fr.seb.function.Product;
-import fr.seb.function.Puissance;
 import fr.seb.space.Space;
 import fr.seb.vectors.Matrix;
 import fr.seb.vectors.Point;
@@ -36,7 +40,8 @@ public class InertiaMatrix extends Matrix {
 
         this.P = newP;
 
-        add(0,0, new Product(m, new Addition<>(new Puissance(a, 2), new Puissance(b ,2))));
+        add(0,0, new Product(m, new Addition<>(new Power(a, 2), new Power(b ,2))));
+        add(0,1, new Product(m, new Addition<>(new Power(a, 2), new Power(b ,2))));
         // Todo : finir les formules
 
 

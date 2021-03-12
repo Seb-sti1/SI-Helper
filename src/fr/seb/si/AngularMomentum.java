@@ -7,6 +7,6 @@ public class AngularMomentum {
     // Todo : constructor & calculation from InertiaMatrix and ProjectionVector and dot product
 
 
-    // Todo : Shifting of point
+    // Todo : Shifting of point 
 
 }

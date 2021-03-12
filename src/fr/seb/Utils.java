@@ -13,6 +13,40 @@ import fr.seb.vectors.VectorNull;
 public class Utils {
 
 
+
+    static final public String projectionFigure = "\\begin{tikzpicture}\n" +
+            //"        % vectors\n" +
+            "        \\node (x) at (3.2,0) {$%s$};\n" +
+            "        \\node (y) at (0,3.2) {$%s$};\n" +
+            "        \\node (z) at (-0.2,-0.5) {$%s = %s$};\n" +
+            "\n" +
+            "        \\node (xone) at (3.2,1.1) {$%s$};\n" +
+            "        \\node (yone) at (-1.1,3.2) {$%s$};\n" +
+            "\n" +
+            "\n" +
+            //"        % angle\n" +
+            "        \\draw[thick, ->] (3,0.1) arc (0:15:3);\n" +
+            "        \\node (alphab) at (3.2,0.5) {$%s$};\n" +
+            "        \\draw[thick, ->, rotate=90] (3,0.1) arc (0:16:3);\n" +
+            "        \\node (alphat) at (-0.5,3.2) {$%s$};\n" +
+            "\n" +
+            //"        % draw the arrow\n" +
+            "        \\draw[->,line width=0.03cm] (0,0) to (3,0);\n" +
+            "        \\draw[->,line width=0.03cm] (0,0) to (0,3);\n" +
+            "\n" +
+            "        \\draw[->,line width=0.03cm] (0,0) to (2.85,0.95);\n" +
+            "        \\draw[->,line width=0.03cm] (0,0) to (-0.95,2.85);\n" +
+            "\n" +
+            //"        % draw a white circle to hide beginnings of arrow\n" +
+            "        \\node[circle,fill,color=white] (a) at (0,0) {};\n" +
+            "\n" +
+            //"        % draw a black circle and dot at the origin\n" +
+            "        \\node[circle,draw,line width=1pt] (a) at (0,0) {};\n" +
+            "        \\node[circle,fill,inner sep=1pt] (b) at (0, 0) {};\n" +
+            "\n" +
+            "\n" +
+            "    \\end{tikzpicture}";
+
     /**
      * Calculate the rotational vector
      *
