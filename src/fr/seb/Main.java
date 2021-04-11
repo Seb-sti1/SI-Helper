@@ -1,66 +1,80 @@
 package fr.seb;
 
-import fr.seb.function.*;
-import fr.seb.si.Velocity;
-import fr.seb.space.Space;
+import fr.seb.function.Addition;
+import fr.seb.function.Scalar;
+import fr.seb.function.ScalarProduct;
+import fr.seb.si.Acceleration;
 import fr.seb.space.FixedSpace;
+import fr.seb.space.Space;
 import fr.seb.space.Space.VECTOR;
 import fr.seb.space.SpinningSpace;
 import fr.seb.vectors.Point;
 import fr.seb.vectors.Variable;
-import fr.seb.vectors.Vector;
+
+import java.util.Arrays;
 
 public class Main {
 
     public static void main(String[] args) {
+        /*Variable H = new Variable("H", new boolean[]{true});
+        Variable e = new Variable("e", new boolean[]{true});
 
-        /*Variable theta = new Variable("\\theta", new boolean[]{false, false, true});
-        Variable phi = new Variable("\\phi", new boolean[]{false, false, true});
+        Variable x = new Variable("x", new boolean[]{true});
 
-        Variable lambda = new Variable("\\lambda", new boolean[]{false, true});
-        Variable gamma = new Variable("\\gamma", new boolean[]{false, true});
+        x.invertSign();
 
-        Space R0 = new FixedSpace();
-        Space R1 = new SpinningSpace(R0, 1, R0.getFixedPoint(), Space.VECTOR.X, Space.VECTOR.X, theta, Space.VECTOR.Y, Space.VECTOR.Y);
-        Space R2 = new SpinningSpace(R1, 2, R0.getFixedPoint(), Space.VECTOR.Y, Space.VECTOR.X, phi, Space.VECTOR.Z, Space.VECTOR.Y);
+        Scalar un = new Scalar(1);
+        Scalar mun = new Scalar(-1);
+        Scalar deux = new Scalar(2);
 
-        Vector x2 = R2.getUnitaryVector(Space.VECTOR.X);
-        Vector y2 = R2.getUnitaryVector(Space.VECTOR.Y);
+        //Expression<Variable> p = Product.Create(x, mun);
 
-        Expression<Vector> expr = new Addition<>(new ScalarProduct(lambda, x2), new ScalarProduct(gamma, y2));
+        Expression<Variable> a = new Addition<>(Arrays.asList(H, e, x));
 
-        p(new Derivation<>(expr, R0));
-        pl("\\\\");
+        pl(a);
 
-        for (int i = 1; i < 4; i++) {
-            p(expr.derive(i, R0));
-            pl("\\\\");
-        }
+        a.invertSign();
 
-        pl(expr.derive(R0).calcul());*/
+        pl(a);
+
+        pl("");*/
+
+
 
         Variable alpha = new Variable("\\alpha", new boolean[]{false, false, false, true});
         Variable beta = new Variable("\\beta", new boolean[]{false, false, false, true});
 
-        Variable a = new Variable("a", new boolean[]{true});
-        Variable b = new Variable("b", new boolean[]{true});
+        Variable H = new Variable("H", new boolean[]{true});
+        Variable e = new Variable("e", new boolean[]{true});
+        Variable L = new Variable("L", new boolean[]{true});
+        Variable X = new Variable("X", new boolean[]{false, false, false, false, true});
+        Variable Z = new Variable("Z", new boolean[]{false, false, false, false, true});
 
         Space R0 = new FixedSpace();
-        Space R1 = new SpinningSpace(R0, 1, R0.getFixedPoint(), VECTOR.X, VECTOR.X, alpha, VECTOR.Y, VECTOR.Y);
+        Space R1 = new SpinningSpace(R0, 1, R0.getFixedPoint(), VECTOR.Z, VECTOR.Z, alpha, VECTOR.X, VECTOR.X);
 
-        Point A = new Point("A", R0.getFixedPoint(), new ScalarProduct(a, R1.getUnitaryVector(VECTOR.Y)));
+        Expression<Variable> a = new Addition<>(Arrays.asList(L, e));
 
-        Space R2 = new SpinningSpace(R1, 2, A, VECTOR.Z, VECTOR.Z, beta, VECTOR.X, VECTOR.X);
+        Point A = new Point("A", R0.getFixedPoint(), Addition.CreateVector(new ScalarProduct(H, R0.getUnitaryVector(VECTOR.Z)),
+                                                                        new ScalarProduct(e, R1.getUnitaryVector(VECTOR.Y))));
+        Point B = new Point("B", A, new ScalarProduct(L, R1.getUnitaryVector(VECTOR.X)));
+        Point C = new Point("C", B, new ScalarProduct(X, R1.getUnitaryVector(VECTOR.X)));
 
-        Point G = new Point("G", A, new ScalarProduct(b, R2.getUnitaryVector(VECTOR.X)));
+        Space R2 = new SpinningSpace(R1, 2, A, VECTOR.X, VECTOR.X, beta, VECTOR.Y, VECTOR.Y);
 
-        Velocity v = new Velocity(G, R2);
-        Expression<Vector> velocityExpression = v.calculate(R0).calcul();
-        pl(velocityExpression);
+        Space R3 = new SpinningSpace(R2, 3, B, VECTOR.X, VECTOR.X, new Scalar(0), VECTOR.Y, VECTOR.Y);
+        Space R4 = new SpinningSpace(R3, 4, C, VECTOR.X, VECTOR.X, new Scalar(0), VECTOR.Y, VECTOR.Y);
 
+
+        Point G4 = new Point("G4", C, new ScalarProduct(Z, R2.getUnitaryVector(VECTOR.Z)));
+
+        Acceleration TRDQ2 = new Acceleration(G4, R4, R0);
+
+
+        pl(TRDQ2.calculate().calcul().calcul().calcul().calcul().calcul());
         pl("");
+        pl(Utils.dotProduct(TRDQ2.calculate().calcul().calcul().calcul().calcul().calcul(), R2.getUnitaryVector(VECTOR.Z)));
 
-        pl(velocityExpression.derive(R0).calcul());
 
     }
 

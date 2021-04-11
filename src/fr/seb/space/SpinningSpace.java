@@ -2,7 +2,10 @@ package fr.seb.space;
 
 import fr.seb.Expression;
 import fr.seb.Utils;
-import fr.seb.function.*;
+import fr.seb.function.Addition;
+import fr.seb.function.Cos;
+import fr.seb.function.ScalarProduct;
+import fr.seb.function.Sin;
 import fr.seb.vectors.Point;
 import fr.seb.vectors.Variable;
 import fr.seb.vectors.Vector;
@@ -73,7 +76,7 @@ public class SpinningSpace implements Space {
                 break;
         }
 
-        Expression<Vector> firstSpinningR2 = new Addition<>(new ScalarProduct(new Cos(angle), firstSpinningFather),
+        Expression<Vector> firstSpinningR2 = Addition.CreateVector(new ScalarProduct(new Cos(angle), firstSpinningFather),
                 new ScalarProduct(new Sin(angle), secondSpinningFather));
 
         switch (angleR2) {
@@ -88,7 +91,7 @@ public class SpinningSpace implements Space {
                 break;
         }
 
-        Expression<Vector> secondSpinningR2 = new Addition<>(new ScalarProduct(new Product(new Scalar<>(-1), new Sin(angle)), firstSpinningFather),
+        Expression<Vector> secondSpinningR2 = Addition.CreateVector(new ScalarProduct(new Sin(angle).invertSign(), firstSpinningFather),
                 new ScalarProduct(new Cos(angle), secondSpinningFather));
 
         VECTOR secondAngle;

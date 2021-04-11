@@ -7,7 +7,7 @@ import fr.seb.vectors.Variable;
 import java.util.Collections;
 import java.util.List;
 
-public class Cos implements Expression<Variable> {
+public class Cos extends Expression<Variable> {
 
     final Expression<Variable> child;
 
@@ -17,31 +17,44 @@ public class Cos implements Expression<Variable> {
 
 
     @Override
-    public List<Expression<Variable>> getChild() {
+    public List<Expression<Variable>> getChildren() {
         return Collections.singletonList(child);
     }
 
     @Override
     public Expression<Variable> calcul() {
+        if (child.calcul().isNull()) {
+            return new Scalar(1);
+        }
+
+
         return new Cos(child.calcul());
     }
 
     @Override
     public Expression<Variable> derive(Space R) {
-        return new Product(child.derive(R), new Product(new Scalar<>(-1), new Sin(child)));
+        return Product.Create(child.derive(R), new Sin(child)).invertSign();
     }
 
     @Override
     public Expression<Variable> derive(int recursionDepth, Space R) {
         if (recursionDepth == 1) {
-            return new Product(new Derivation<>(child, R), new Product(new Scalar<>(-1), new Sin(child)));
+            return Product.Create(new Derivation<>(child, R), new Sin(child)).invertSign();
         } else {
-            return new Product(child.derive(recursionDepth - 1, R), new Product(new Scalar<>(-1), new Sin(child)));
+            return Product.Create(child.derive(recursionDepth - 1, R), new Sin(child)).invertSign();
         }
     }
 
     @Override
     public String toString() {
-        return String.format("\\cos(%s)", child.toString());
+        String s = "";
+
+        if (this.hasMinus()) {
+            s = "-";
+        }
+
+        s += String.format("\\cos(%s)", child.toString());
+
+        return s;
     }
 }

@@ -2,41 +2,49 @@ package fr.seb.function;
 
 import fr.seb.Expression;
 import fr.seb.space.Space;
+import fr.seb.vectors.Variable;
 
 import java.util.List;
 
-public class Scalar<T> implements Expression<T> {
+public class Scalar extends Expression<Variable> {
 
-    final int n;
+    public int n;
 
     public Scalar(int n) {
         this.n = n;
     }
 
     @Override
-    public List<Expression<T>> getChild() {
+    public List<Expression<Variable>> getChildren() {
         return null;
     }
 
     @Override
-    public Expression<T> calcul() {
+    public Expression<Variable> calcul() {
         return this;
     }
 
     @Override
-    public Expression<T> derive(Space R) {
-        return new Scalar<>(0);
+    public Expression<Variable> derive(Space R) {
+        return new Scalar(0);
     }
 
     @Override
-    public Expression<T> derive(int recursionDepth, Space R) {
+    public Expression<Variable> derive(int recursionDepth, Space R) {
         if (recursionDepth == 0) {
             return this;
         } else if (recursionDepth == 1) {
             return new Derivation<>(this, R);
         } else {
-            return new Scalar<>(0);
+            return new Scalar(0);
         }
+    }
+
+    @Override
+    public Expression<Variable> invertSign() {
+        this.n = - this.n;
+
+        return this;
     }
 
     @Override

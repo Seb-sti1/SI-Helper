@@ -11,6 +11,9 @@ import fr.seb.vectors.Vector;
 import fr.seb.vectors.VectorNull;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Velocity {
 
     Space R;
@@ -31,14 +34,16 @@ public class Velocity {
             if (R.getFather() != R_fixed) {
                 Space R_start = R;
 
-                Expression<Vector> result = new VectorNull();
+                List<Expression<Vector>> list = new ArrayList<>();
+
 
                 while (R_start != R_fixed) {
-                    result = new Addition<>(result, new Velocity(P, R_start).calculate(R_start.getFather())).calcul();
+                    list.add(new Velocity(P, R_start).calculate(R_start.getFather()));
+
                     R_start = R_start.getFather();
                 }
 
-                return result.calcul();
+                return new Addition<>(list);
             } else {
                 if (P == R.getFixedPoint()) {
                     if (P == R_fixed.getFixedPoint()) {
@@ -47,7 +52,7 @@ public class Velocity {
                         return new Derivation<>(Utils.getVector(R_fixed.getFixedPoint(), P), R).derive(R_fixed);
                     }
                 } else {
-                    return new Addition<>(new Velocity(R.getFixedPoint(), R).calculate(R_fixed),
+                    return Addition.CreateVector(new Velocity(R.getFixedPoint(), R).calculate(R_fixed),
                             new WedgeProduct(Utils.getVector(R.getFixedPoint(), P), Utils.getProjectionVector(R, R_fixed)));
                 }
             }

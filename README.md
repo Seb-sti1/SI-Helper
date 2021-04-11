@@ -45,6 +45,7 @@ be done recursively by iterating throw each node. Also, by making the calculatio
 recursive, it's possible to show calculation steps to the user (by limiting the recursion
 depth).
 
+_This part needs to be reviewed_\
 However, there is a big counterpart to these advantages : a same expression have multiple
 way to be decomposed in sub-expression by the program, making it difficult to compare and
 simplify expressions. This is not obvious in the example above but with, for example,
@@ -52,6 +53,8 @@ simplify expressions. This is not obvious in the example above but with, for exa
 "(a \times b) \times c".
 
 ## Basic use (an example)
+
+_This example was made on a previous version, there are minor differences._
 
 ```java
 // initiate two variables for the angle
@@ -92,16 +95,22 @@ The spinning spaces give these figures :
 
 At the end the console gives the expression of the acceleration of G in R2 compared to R0 !
 
-## To come
+## ToDo
 
-- The wiki
-- IntertiaMatrix class; AngularMomentum class; Torque class
-- An algorithm that simplify expressions
-- A latex document generator
-- Make Addition & Product use List
-- Add `hasMinus` and `neg` properties to expressions (respectively return 
-  if the expression is negative, and invert the sign of the expression)
-- Change interface to abstract (because it what abstract class was for, and not interface)
+1) use the invertSign/hasMinus properties. Maybe make invertSign return a clone expression
+   with the sign invert. This ensures that inverting the sign will not modify an expression use 
+   else where, but the clear disadvantage is that the same object will be viewed differently.
+   Or create a clone function (and clone before inverting sign in the code). By adding a field
+   in the clone element to refer the to father element, it would be possible to identify
+   same object by looking to the first alias.
+1) Test the new architecture
+2) IntertiaMatrix class; AngularMomentum class; Torque class
+4) A review of `calcul()` function usage
+5) An algorithm that simplify expressions
+3) The wiki
+5) A latex document generator
+
+
 
 ## Contributions
 
@@ -111,7 +120,7 @@ think when contributing is that I want this program to be able to do the calcula
 display the steps.
 
 ## Thanks
-- [Moxinilian](https://github.com/Moxinilian) *for the help & the advice* 
+- [Moxinilian](https://github.com/Moxinilian) *for the help and advices* 
 - Quentin R., Mathis P. & Alice G.  *for their support*
 
 \

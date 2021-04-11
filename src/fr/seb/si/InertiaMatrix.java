@@ -40,8 +40,8 @@ public class InertiaMatrix extends Matrix {
 
         this.P = newP;
 
-        add(0,0, new Product(m, new Addition<>(new Power(a, 2), new Power(b ,2))));
-        add(0,1, new Product(m, new Addition<>(new Power(a, 2), new Power(b ,2))));
+        add(0,0, Product.Create(m, Addition.CreateVariable(new Power(a, 2), new Power(b ,2))));
+        add(0,1, Product.Create(m, Addition.CreateVariable(new Power(a, 2), new Power(b ,2))));
         // Todo : finir les formules
 
 

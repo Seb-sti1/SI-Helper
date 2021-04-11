@@ -7,7 +7,7 @@ import fr.seb.vectors.Variable;
 import java.util.Collections;
 import java.util.List;
 
-public class Sin implements Expression<Variable> {
+public class Sin extends Expression<Variable> {
 
     final Expression<Variable> child;
 
@@ -17,18 +17,22 @@ public class Sin implements Expression<Variable> {
 
 
     @Override
-    public List<Expression<Variable>> getChild() {
+    public List<Expression<Variable>> getChildren() {
         return Collections.singletonList(child);
     }
 
     @Override
     public Expression<Variable> calcul() {
+        if (child.calcul().isNull()) {
+            return new Scalar(0);
+        }
+
         return new Sin(child.calcul());
     }
 
     @Override
     public Expression<Variable> derive(Space R) {
-        return new Product(child.derive(R), new Cos(child));
+        return Product.Create(child.derive(R), new Cos(child));
     }
 
     @Override
@@ -36,14 +40,22 @@ public class Sin implements Expression<Variable> {
         if (recursionDepth == 0) {
             return this;
         } else if (recursionDepth == 1) {
-            return new Product(new Derivation<>(child, R), new Cos(child));
+            return Product.Create(new Derivation<>(child, R), new Cos(child));
         } else {
-            return new Product(child.derive(recursionDepth - 1, R), new Cos(child));
+            return Product.Create(child.derive(recursionDepth - 1, R), new Cos(child));
         }
     }
 
     @Override
     public String toString() {
-        return String.format("\\sin(%s)", child.toString());
+        String s = "";
+
+        if (this.hasMinus()) {
+            s = "-";
+        }
+
+        s += String.format("\\sin(%s)", child.toString());
+
+        return s;
     }
 }

@@ -10,6 +10,10 @@ import fr.seb.vectors.Variable;
 import fr.seb.vectors.Vector;
 import fr.seb.vectors.VectorNull;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class Utils {
 
 
@@ -58,24 +62,20 @@ public class Utils {
         if (R2 == R1) {
             return null;
         } else if (R2.getFathers() != null && R2.getFathers().contains(R1)) { // the vector is in the space declared before (need to go down)
-            Expression<Vector> rotationVector = null;
+            List<Expression<Vector>> list = new ArrayList<>();
 
-            Space R_dedans = R2;
+            Space R_in = R2;
 
-            while (R_dedans != R1) {
-                if (R_dedans.getRotationVector() != null) {
-                    if (rotationVector == null) {
-                        rotationVector = R_dedans.getRotationVector();
-                    } else {
-                        rotationVector = new Addition<>(rotationVector, R_dedans.getRotationVector());
-                    }
+            while (R_in != R1) {
+                if (R_in.getRotationVector() != null) {
+                    list.add(R_in.getRotationVector());
                 }
-                R_dedans = R_dedans.getFather();
+                R_in = R_in.getFather();
             }
 
-            return rotationVector;
+            return new Addition<>(list);
         } else { // the opposite
-            return new ScalarProduct(new Scalar<>( -1), getProjectionVector(R1, R2));
+            return new ScalarProduct(new Scalar( -1), getProjectionVector(R1, R2));
         }
     }
 
@@ -105,16 +105,13 @@ public class Utils {
             Expression<Variable> v2doty = dotProduct(v2, y);
             Expression<Variable> v2dotz = dotProduct(v2, z);
 
-            Expression<Variable> resultx = new Addition<>(new Product(v1doty, v2dotz), new Product(new Scalar<>(-1), new Product(v1dotz, v2doty))).calcul();
-            Expression<Variable> resulty = new Addition<>(new Product(v1dotz, v2dotx), new Product(new Scalar<>(-1), new Product(v1dotx, v2dotz))).calcul();
-            Expression<Variable> resultz = new Addition<>(new Product(v1dotx, v2doty), new Product(new Scalar<>(-1), new Product(v1doty, v2dotx))).calcul();
+            Expression<Variable> resultx = Addition.CreateVariable(Product.Create(v1doty, v2dotz), new Product(Arrays.asList(new Scalar(-1), v1dotz, v2doty))).calcul();
+            Expression<Variable> resulty = Addition.CreateVariable(Product.Create(v1dotz, v2dotx), new Product(Arrays.asList(new Scalar(-1), v1dotx, v2dotz))).calcul();
+            Expression<Variable> resultz = Addition.CreateVariable(Product.Create(v1dotx, v2doty), new Product(Arrays.asList(new Scalar(-1), v1doty, v2dotx))).calcul();
 
-            return new Addition<>(new ScalarProduct(resultx, x),
-                                    new Addition<>(new ScalarProduct(resulty, y),
-                                                    new ScalarProduct(resultz, z))).calcul();
-
+            return new Addition<>(Arrays.asList(new ScalarProduct(resultx, x), new ScalarProduct(resulty, y), new ScalarProduct(resultz, z))).calcul();
         } else {
-            return new ScalarProduct(new Scalar<>(-1), gammaRule(v2, v1));
+            return gammaRule(v2, v1).invertSign();
         }
     }
 
@@ -127,24 +124,42 @@ public class Utils {
      * @return the dot product
      */
     public static Expression<Variable> dotProduct(Expression<Vector> vectorLeft, Expression<Vector> vectorRight) {
-        if (vectorLeft instanceof Addition) {
-            Addition<Vector> a = (Addition<Vector>) vectorLeft;
 
-            return new Addition<>(dotProduct(a.left, vectorRight), dotProduct(a.right, vectorRight)).calcul();
-        } else if (vectorLeft instanceof ScalarProduct) {
-            ScalarProduct pe = (ScalarProduct) vectorLeft;
+        // if one of the two vector is an addition -> decompose and restart the dot product with the decomposition
+        if (vectorLeft instanceof Addition || vectorRight instanceof Addition) {
+            Addition<Vector> add;
+            Expression<Vector> other;
 
-            return new Product(pe.scalaire, dotProduct(pe.vecteur, vectorRight)).calcul();
+            if (vectorLeft instanceof Addition) {
+                add = (Addition<Vector>) vectorLeft;
+                other = vectorRight;
+            } else {
+                add = (Addition<Vector>) vectorRight;
+                other = vectorLeft;
+            }
+
+            List<Expression<Variable>> list = new ArrayList<>();
+
+            for (Expression<Vector> child : add.getChildren()) {
+                list.add(dotProduct(child, other));
+            }
+
+            return new Addition<>(list).calcul();
         }
+        // if one of the two vector is a scalar product -> put the product before and restart the dot product with the new vector
+        else if (vectorLeft instanceof ScalarProduct || vectorRight instanceof ScalarProduct) {
+            ScalarProduct sp;
+            Expression<Vector> other;
 
-        if (vectorRight instanceof Addition) {
-            Addition<Vector> a = (Addition<Vector>) vectorRight;
+            if (vectorLeft instanceof ScalarProduct) {
+                sp = (ScalarProduct) vectorLeft;
+                other = vectorRight;
+            } else {
+                sp = (ScalarProduct) vectorRight;
+                other = vectorLeft;
+            }
 
-            return new Addition<>(dotProduct(vectorLeft, a.left), dotProduct(vectorLeft, a.right)).calcul();
-        } else if (vectorRight instanceof ScalarProduct) {
-            ScalarProduct pe = (ScalarProduct) vectorRight;
-
-            return new Product(pe.scalaire, dotProduct(pe.vecteur, vectorLeft)).calcul();
+            return Product.Create(sp.scalaire, dotProduct(sp.vecteur, other)).calcul();
         }
 
         if (vectorRight instanceof Vector && vectorLeft instanceof Vector) {
@@ -153,9 +168,9 @@ public class Utils {
 
             if (vL.getSpace() == vR.getSpace()) {
                 if (vL == vR) {
-                    return new Scalar<>(1);
+                    return new Scalar(1);
                 } else {
-                    return new Scalar<>(0);
+                    return new Scalar(0);
                 }
             } else {
                 if (vR.getSpace().getFather() != null && vR.getSpace().getFathers().contains(vL.getSpace())) {
@@ -181,19 +196,22 @@ public class Utils {
         }
 
         if (A.getFathers().contains(B)) {
-            Expression<Vector> result = new VectorNull();
-
+            List<Expression<Vector>> list = new ArrayList<>();
             Point C = A;
 
             while (C != B) {
-                result = new Addition<>(result, C.getFromFather());
+                list.add(C.getFromFather());
 
                 C = C.getFather();
             }
 
-            return new ScalarProduct(new Scalar<>(-1), result.calcul()); // because the calculation is done oppositely (because of getFromFather)
+            if (list.isEmpty()) {
+                return new VectorNull();
+            }
+
+            return new Addition<>(list).invertSign(); // because the calculation is done oppositely (because of getFromFather)
         } else if (B.getFathers().contains(A)) { // the other way around
-            return new ScalarProduct(new Scalar<>(-1), getVector(B, A)).calcul();
+            return getVector(B, A).invertSign();
         }
 
         throw new Error("Can't find a way to calculate this vector !");

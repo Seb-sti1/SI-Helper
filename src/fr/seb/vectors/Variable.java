@@ -7,13 +7,14 @@ import fr.seb.space.Space;
 import java.util.Arrays;
 import java.util.List;
 
-public class Variable implements Expression<Variable> {
+public class Variable extends Expression<Variable> {
 
     private final String name;
     private final boolean[] constant;
     private final int derive;
 
     public Variable(String name, boolean[] cnst) {
+        // Todo: change cnst to int (max derive)
         this.name = name;
 
         if (cnst.length > 0) {
@@ -39,9 +40,15 @@ public class Variable implements Expression<Variable> {
     @Override
     public Expression<Variable> derive(Space R) {
         if (constant[0]) {
-            return new Scalar<>(0);
+            return new Scalar(0);
         } else {
-            return new Variable(name, Arrays.copyOfRange(this.constant, 1, this.constant.length), derive + 1);
+            Variable v = new Variable(name, Arrays.copyOfRange(this.constant, 1, this.constant.length), derive + 1);
+
+            if (this.hasMinus()) {
+                v.invertSign();
+            }
+
+            return v;
         }
     }
 
@@ -55,7 +62,7 @@ public class Variable implements Expression<Variable> {
     }
 
     @Override
-    public List<Expression<Variable>> getChild() {
+    public List<Expression<Variable>> getChildren() {
         return null;
     }
 
@@ -66,17 +73,31 @@ public class Variable implements Expression<Variable> {
 
     @Override
     public String toString() {
-        if (derive == 0) {
-            return name;
-        } else {
-            StringBuilder d = new StringBuilder();
+        StringBuilder s = new StringBuilder();
 
-            for (int i = 0; i < derive; i++) {
-                d.append("d");
-            }
-
-            return "\\" + d + "ot{" + name + "}";
+        if (this.hasMinus()) {
+            s.append("- ");
         }
 
+        if (derive == 0) {
+            s.append(name);
+        } else {
+            s.append("\\");
+
+            for (int i = 0; i < derive; i++) {
+                s.append("d");
+            }
+
+            s.append("ot{").append(name).append("}");
+        }
+
+        return s.toString();
     }
+
+    @Override
+    public Expression<Variable> invertSign() {
+        System.out.println("Warming inverted sign of variable");
+        return super.invertSign();
+    }
+
 }

@@ -30,8 +30,8 @@ public class Matrix {
         for (int i = 0; i < n; i++) {
             List<Expression<Variable>> line = new ArrayList<>();
 
-            for (int j = 0; i < p; i++) {
-                line.add(new Scalar<>(0));
+            for (int j = 0; j < p; j++) {
+                line.add(new Scalar(0));
             }
             matrix.add(line);
         }
@@ -91,7 +91,7 @@ public class Matrix {
             throw new IndexOutOfBoundsException();
         }
 
-        set(i, j, new Addition<>(get(i, j), value));
+        set(i, j, Addition.CreateVariable(get(i, j), value));
     }
 
     /**
@@ -136,14 +136,12 @@ public class Matrix {
                 List<Expression<Variable>> l = new ArrayList<>();
 
                 for (int k = 0; k < this.p; k++) {
-                    l.add(new Product(this.get(i, k), m.get(k, j)));
+                    l.add(Product.Create(this.get(i, k), m.get(k, j)));
                 }
 
-                // Todo : result.set(i, j, //addtion of l);
-
+                result.set(i, j, new Addition<>(l));
             }
         }
-
         return result;
     }
 

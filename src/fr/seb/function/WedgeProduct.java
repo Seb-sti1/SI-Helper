@@ -1,14 +1,15 @@
 package fr.seb.function;
 
 import fr.seb.Expression;
-import fr.seb.space.Space;
 import fr.seb.Utils;
+import fr.seb.space.Space;
 import fr.seb.vectors.Vector;
 import fr.seb.vectors.VectorNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class WedgeProduct implements Expression<Vector> {
+public class WedgeProduct extends Expression<Vector> {
 
     Expression<Vector> left, right;
 
@@ -19,16 +20,22 @@ public class WedgeProduct implements Expression<Vector> {
 
 
     @Override
-    public List<Expression<Vector>> getChild() {
+    public List<Expression<Vector>> getChildren() {
         return null;
     }
 
     @Override
     public Expression<Vector> calcul() {
         if (this.left instanceof Addition) {
-            Addition<Vector> a = (Addition<Vector>) this.left;
+            Addition<Vector> add = (Addition<Vector>) this.left;
 
-            return new Addition<>(new WedgeProduct(a.left, this.right), new WedgeProduct(a.right, this.right)).calcul();
+            List<Expression<Vector>> list = new ArrayList<>();
+
+            for (Expression<Vector> child : add.getChildren()) {
+                list.add(new WedgeProduct(child, this.right));
+            }
+
+            return new Addition<>(list).calcul();
         } else if (this.left instanceof ScalarProduct) {
             ScalarProduct pe = (ScalarProduct) this.left;
 
@@ -36,9 +43,15 @@ public class WedgeProduct implements Expression<Vector> {
         }
 
         if (this.right instanceof Addition) {
-            Addition<Vector> a = (Addition<Vector>) this.right;
+            Addition<Vector> add = (Addition<Vector>) this.right;
 
-            return new Addition<>(new WedgeProduct(this.left, a.left), new WedgeProduct(this.left, a.right)).calcul();
+            List<Expression<Vector>> list = new ArrayList<>();
+
+            for (Expression<Vector> child : add.getChildren()) {
+                list.add(new WedgeProduct(this.left, child));
+            }
+
+            return new Addition<>(list).calcul();
         } else if (this.right instanceof ScalarProduct) {
             ScalarProduct pe = (ScalarProduct) this.right;
 

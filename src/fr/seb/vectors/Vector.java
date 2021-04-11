@@ -8,7 +8,7 @@ import fr.seb.space.Space;
 
 import java.util.List;
 
-public class Vector implements Expression<Vector> {
+public class Vector extends Expression<Vector> {
 
     final String name;
     final int indice;
@@ -23,7 +23,7 @@ public class Vector implements Expression<Vector> {
     }
 
     @Override
-    public List<Expression<Vector>> getChild() {
+    public List<Expression<Vector>> getChildren() {
         return null;
     }
 
@@ -61,6 +61,12 @@ public class Vector implements Expression<Vector> {
     @Override
     public String toString() {
         return String.format("\\overrightarrow{%s_{%s}}", this.name, this.indice);
+    }
+
+    @Override
+    public Expression<Vector> invertSign() {
+        System.out.println("Warming inverted sign of vector");
+        return super.invertSign();
     }
 
 }

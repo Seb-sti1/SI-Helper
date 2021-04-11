@@ -5,12 +5,12 @@ import fr.seb.space.Space;
 
 import java.util.List;
 
-public class VectorNull implements Expression<Vector> {
+public class VectorNull extends Expression<Vector> {
 
     public VectorNull() {}
 
     @Override
-    public List<Expression<Vector>> getChild() {
+    public List<Expression<Vector>> getChildren() {
         return null;
     }
 
@@ -32,5 +32,11 @@ public class VectorNull implements Expression<Vector> {
     @Override
     public String toString() {
         return "\\vec{0}";
+    }
+
+    @Override
+    public Expression<Vector> invertSign() {
+        System.out.println("Warming inverted sign of vector null");
+        return super.invertSign();
     }
 }

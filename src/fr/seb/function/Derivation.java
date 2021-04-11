@@ -6,7 +6,7 @@ import fr.seb.space.Space;
 import java.util.List;
 
 
-public class Derivation<T> implements Expression<T> {
+public class Derivation<T> extends Expression<T> {
 
     final Expression<T> toDerive;
     final Space R;
@@ -16,7 +16,7 @@ public class Derivation<T> implements Expression<T> {
     }
 
     @Override
-    public List<Expression<T>> getChild() {
+    public List<Expression<T>> getChildren() {
         return null;
     }
 
@@ -52,6 +52,12 @@ public class Derivation<T> implements Expression<T> {
     @Override
     public Expression<T> derive(Space R) {
         return this.toDerive.derive(R);
+    }
+
+
+    @Override
+    public boolean isVectorial() {
+        return this.toDerive.isVectorial();
     }
 
     @Override

@@ -7,27 +7,27 @@ import fr.seb.vectors.Variable;
 import java.util.Arrays;
 import java.util.List;
 
-public class Power implements Expression<Variable> {
+public class Power extends Expression<Variable> {
 
-    private final Scalar<Variable> pow;
+    private final Scalar pow;
     private final Expression<Variable> child;
 
-    public Power(Expression<Variable> f, Scalar<Variable> pow) throws Error {
+    public Power(Expression<Variable> f, Scalar pow) throws Error {
         this.child = f;
         this.pow = pow;
     }
 
     public Power(Expression<Variable> f, int pow) {
         this.child = f;
-        this.pow = new Scalar<>(pow);
+        this.pow = new Scalar(pow);
     }
 
     @Override
-    public List<Expression<Variable>> getChild() {
+    public List<Expression<Variable>> getChildren() {
         return Arrays.asList(child, pow);
     }
 
-    public Scalar<Variable> getPower() {
+    public Scalar getPower() {
         return pow;
     }
 
@@ -36,7 +36,7 @@ public class Power implements Expression<Variable> {
         Expression<Variable> R;
         switch (pow.n) {
             case 0:
-                R = new Scalar<>(1);
+                R = new Scalar(1);
                 break;
             case 1:
                 R = child;
@@ -49,21 +49,29 @@ public class Power implements Expression<Variable> {
 
     @Override
     public Expression<Variable> derive(Space R) {
-        return new Product(pow, new Product(child.derive(R), new Power(child, new Scalar<>(pow.n - 1))));
+        return new Product(Arrays.asList(pow, child.derive(R), new Power(child, new Scalar(pow.n - 1))));
     }
 
     @Override
     public Expression<Variable> derive(int recursionDepth, Space R) {
         if (recursionDepth == 1) {
-            return new Product(pow, new Product(new Derivation<>(child, R), new Power(child, new Scalar<>(pow.n - 1))));
+            return new Product(Arrays.asList(pow, new Derivation<>(child, R), new Power(child, new Scalar(pow.n - 1))));
         } else {
-            return new Product(pow, new Product(child.derive(recursionDepth - 1, R), new Power(child, new Scalar<>(pow.n - 1))));
+            return new Product(Arrays.asList(pow, child.derive(recursionDepth - 1, R), new Power(child, new Scalar(pow.n - 1))));
         }
     }
 
     @Override
     public String toString() {
-        return "(" + child.toString() + ")^{" + pow.toString() + "}";
+        String s = "";
+
+        if (this.hasMinus()) {
+            s = "-";
+        }
+
+        s += String.format("(%s)^{%s}", child.toString(), pow.toString());
+
+        return s;
     }
 
 }
