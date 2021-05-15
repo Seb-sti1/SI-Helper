@@ -13,13 +13,19 @@ public class Vector extends Expression<Vector> {
     final String name;
     final int indice;
     final Space R;
+    final Space.VECTOR type;
 
     Expression<Vector> vectorExpression = null;
 
-    public Vector(String name, int indice, Space R) {
+    public Vector(String name, int indice, Space R, Space.VECTOR type) {
         this.name = name;
         this.indice = indice;
         this.R = R;
+        this.type = type;
+    }
+
+    public Space.VECTOR getType() {
+        return type;
     }
 
     @Override
@@ -64,9 +70,28 @@ public class Vector extends Expression<Vector> {
     }
 
     @Override
-    public Expression<Vector> invertSign() {
-        System.out.println("Warming inverted sign of vector");
-        return super.invertSign();
+    public Expression<Vector> clone() {
+        Vector v = new Vector(this.name, this.indice, this.R, Space.VECTOR.X);
+        v.setExpression(this.vectorExpression);
+
+        return v.setSign(this.hasMinus());
+    }
+
+    @Override
+    public Expression<Vector> getPositiveClone() {
+        Vector v = new Vector(this.name, this.indice, this.R, this.type);
+        v.setExpression(this.vectorExpression);
+
+        return v;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Vector) {
+            return this.name.equals(((Vector) o).name) && this.indice == ((Vector) o).indice && this.R == ((Vector) o).R && this.hasMinus() == ((Vector) o).hasMinus();
+        }
+
+        return false;
     }
 
 }

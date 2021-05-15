@@ -1,14 +1,8 @@
 package fr.seb;
 
 import fr.seb.function.Addition;
+import fr.seb.function.Product;
 import fr.seb.function.Scalar;
-import fr.seb.function.ScalarProduct;
-import fr.seb.si.Acceleration;
-import fr.seb.space.FixedSpace;
-import fr.seb.space.Space;
-import fr.seb.space.Space.VECTOR;
-import fr.seb.space.SpinningSpace;
-import fr.seb.vectors.Point;
 import fr.seb.vectors.Variable;
 
 import java.util.Arrays;
@@ -16,31 +10,9 @@ import java.util.Arrays;
 public class Main {
 
     public static void main(String[] args) {
-        /*Variable H = new Variable("H", new boolean[]{true});
-        Variable e = new Variable("e", new boolean[]{true});
-
-        Variable x = new Variable("x", new boolean[]{true});
-
-        x.invertSign();
-
-        Scalar un = new Scalar(1);
-        Scalar mun = new Scalar(-1);
-        Scalar deux = new Scalar(2);
-
-        //Expression<Variable> p = Product.Create(x, mun);
-
-        Expression<Variable> a = new Addition<>(Arrays.asList(H, e, x));
-
-        pl(a);
-
-        a.invertSign();
-
-        pl(a);
-
-        pl("");*/
 
 
-
+        /*
         Variable alpha = new Variable("\\alpha", new boolean[]{false, false, false, true});
         Variable beta = new Variable("\\beta", new boolean[]{false, false, false, true});
 
@@ -74,8 +46,35 @@ public class Main {
         pl(TRDQ2.calculate().calcul().calcul().calcul().calcul().calcul());
         pl("");
         pl(Utils.dotProduct(TRDQ2.calculate().calcul().calcul().calcul().calcul().calcul(), R2.getUnitaryVector(VECTOR.Z)));
+*/
 
+    }
 
+    public static void tests() {
+        Variable x = new Variable("x", 1);
+        x.invertSign();
+        pl(x);
+
+        Scalar mun = new Scalar(-1);
+        Expression<Variable> p = Product.Create(x, mun);
+        pl(x);
+        pl(p);
+
+        Variable H = new Variable("H", 1);
+        Variable e = new Variable("e", 1);
+
+        Addition<Variable> a = new Addition<>(Arrays.asList(H, e, H, x));
+        pl(a);
+        Addition<Variable> b = new Addition<>(Arrays.asList(e, H, x));
+        pl(b);
+
+        Addition<Variable> c = Addition.CreateVariable(a, b);
+        pl(c);
+
+        Product d = Product.Create(a, b);
+        pl(d);
+
+        pl("");
     }
 
     public static void p(Object o) {
@@ -84,5 +83,9 @@ public class Main {
 
     public static void pl(Object o) {
         System.out.println(o.toString());
+    }
+
+    public static void pl(Object o, boolean dollars) {
+        System.out.printf("$%s$\n\n", o.toString());
     }
 }

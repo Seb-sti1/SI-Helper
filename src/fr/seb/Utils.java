@@ -47,8 +47,6 @@ public class Utils {
             //"        % draw a black circle and dot at the origin\n" +
             "        \\node[circle,draw,line width=1pt] (a) at (0,0) {};\n" +
             "        \\node[circle,fill,inner sep=1pt] (b) at (0, 0) {};\n" +
-            "\n" +
-            "\n" +
             "    \\end{tikzpicture}";
 
     /**
@@ -73,7 +71,7 @@ public class Utils {
                 R_in = R_in.getFather();
             }
 
-            return new Addition<>(list);
+            return Addition.CreateVector(list);
         } else { // the opposite
             return new ScalarProduct(new Scalar( -1), getProjectionVector(R1, R2));
         }
@@ -93,6 +91,22 @@ public class Utils {
         Space R2 = v2.getSpace();
 
         if (R1 == R2 || (R1.getFather() != null && R1.getFathers().contains(R2))) {
+
+            // search for other alias of v2
+            if (R1 != R2) {
+                Vector alias = R1.getUnitaryVector(v2.getType());
+                Vector subAlias = alias;
+
+                while (subAlias.getExpression() instanceof Vector && !subAlias.equals(v2)) {
+                    subAlias = (Vector) alias.getExpression();
+                }
+
+                if (subAlias.equals(v2)) {// there is an easier way to calculate the wedge product
+                    return gammaRule(v1, alias);
+                }
+            }
+
+            // make the wedge product with the alias or v2
             Vector x = R2.getUnitaryVector(Space.VECTOR.X);
             Vector y = R2.getUnitaryVector(Space.VECTOR.Y);
             Vector z = R2.getUnitaryVector(Space.VECTOR.Z);
@@ -109,7 +123,7 @@ public class Utils {
             Expression<Variable> resulty = Addition.CreateVariable(Product.Create(v1dotz, v2dotx), new Product(Arrays.asList(new Scalar(-1), v1dotx, v2dotz))).calcul();
             Expression<Variable> resultz = Addition.CreateVariable(Product.Create(v1dotx, v2doty), new Product(Arrays.asList(new Scalar(-1), v1doty, v2dotx))).calcul();
 
-            return new Addition<>(Arrays.asList(new ScalarProduct(resultx, x), new ScalarProduct(resulty, y), new ScalarProduct(resultz, z))).calcul();
+            return Addition.CreateVector(Arrays.asList(new ScalarProduct(resultx, x), new ScalarProduct(resulty, y), new ScalarProduct(resultz, z))).calcul();
         } else {
             return gammaRule(v2, v1).invertSign();
         }
@@ -144,7 +158,7 @@ public class Utils {
                 list.add(dotProduct(child, other));
             }
 
-            return new Addition<>(list).calcul();
+            return new Addition<>(list).needToInvertSign(add.hasMinus()).calcul();
         }
         // if one of the two vector is a scalar product -> put the product before and restart the dot product with the new vector
         else if (vectorLeft instanceof ScalarProduct || vectorRight instanceof ScalarProduct) {
@@ -159,7 +173,7 @@ public class Utils {
                 other = vectorLeft;
             }
 
-            return Product.Create(sp.scalaire, dotProduct(sp.vecteur, other)).calcul();
+            return Product.Create(sp.scalar, dotProduct(sp.vector, other)).needToInvertSign(sp.hasMinus()).calcul();
         }
 
         if (vectorRight instanceof Vector && vectorLeft instanceof Vector) {
@@ -167,7 +181,7 @@ public class Utils {
             Vector vR = (Vector) vectorRight;
 
             if (vL.getSpace() == vR.getSpace()) {
-                if (vL == vR) {
+                if (vL.equals(vR)) {
                     return new Scalar(1);
                 } else {
                     return new Scalar(0);
@@ -209,12 +223,18 @@ public class Utils {
                 return new VectorNull();
             }
 
-            return new Addition<>(list).invertSign(); // because the calculation is done oppositely (because of getFromFather)
+            return Addition.CreateVector(list).invertSign(); // because the calculation is done oppositely (because of getFromFather)
         } else if (B.getFathers().contains(A)) { // the other way around
             return getVector(B, A).invertSign();
         }
 
         throw new Error("Can't find a way to calculate this vector !");
+    }
+
+
+
+    public static <T> boolean listEqualsIgnoreOrders(List<T> l1, List<T> l2) {
+        return l1.size() == l2.size() && l1.containsAll(l2) && l2.containsAll(l1);
     }
 
 }

@@ -2,8 +2,8 @@ package fr.seb.space;
 
 import fr.seb.Expression;
 import fr.seb.vectors.Point;
-import fr.seb.vectors.VectorNull;
 import fr.seb.vectors.Vector;
+import fr.seb.vectors.VectorNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +17,9 @@ public class FixedSpace implements Space {
     final Point center;
 
     public FixedSpace() {
-        this.x = new Vector("x",0, this);
-        this.y = new Vector("y",0, this);
-        this.z = new Vector("z",0, this);
+        this.x = new Vector("x",0, this, VECTOR.X);
+        this.y = new Vector("y",0, this, VECTOR.Y);
+        this.z = new Vector("z",0, this, VECTOR.Z);
 
         this.center = new Point("O", null, new VectorNull());
     }

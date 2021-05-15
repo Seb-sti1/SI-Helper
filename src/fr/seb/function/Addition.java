@@ -1,6 +1,7 @@
 package fr.seb.function;
 
 import fr.seb.Expression;
+import fr.seb.Utils;
 import fr.seb.space.Space;
 import fr.seb.vectors.Variable;
 import fr.seb.vectors.Vector;
@@ -19,6 +20,7 @@ public class Addition<T> extends Expression<T> {
             throw new Error("Can't create addition with no term");
         }
 
+        //todo remove below in Addition.CreateVector / Addition.CreatorVariable
         this.l = new ArrayList<>();
 
         int scalarPart = 0;
@@ -28,7 +30,11 @@ public class Addition<T> extends Expression<T> {
             if (!ele.isNull()) {
 
                 if (ele instanceof Addition) {
-                    this.l.addAll(ele.getChildren());
+                    for (Expression<T> c : ele.getChildren()) {
+                        if (!c.isNull()) {
+                            this.l.add(c.clone().needToInvertSign(ele.hasMinus()));
+                        }
+                    }
                 } else if (ele instanceof Scalar) {
                     scalarPart += ((Scalar) ele).n;
                 } else {
@@ -37,6 +43,8 @@ public class Addition<T> extends Expression<T> {
             }
         }
 
+
+        // todo : need to constrain T
         if (scalarPart != 0) {
             this.l.add((Expression<T>) new Scalar(scalarPart)); // work because no scalar part with vector
         }
@@ -51,6 +59,33 @@ public class Addition<T> extends Expression<T> {
 
     }
 
+    public static Expression<Vector> CreateVector(List<Expression<Vector>> l) {
+        List<Expression<Vector>> r = new ArrayList<>();
+
+        for (Expression<Vector> ele : l) {
+            if (!ele.isNull()) {
+
+                if (ele instanceof Addition) {
+                    for (Expression<Vector> c : ele.getChildren()) {
+                        if (!c.isNull()) {
+                            r.add(c.clone().needToInvertSign(ele.hasMinus()));
+                        }
+                    }
+                } else {
+                    r.add(ele);
+                }
+            }
+        }
+
+        if (r.size() == 0) {
+            return new VectorNull();
+        } else if(r.size() == 1) {
+            return r.get(0).clone();
+        } else {
+            return new Addition<>(r);
+        }
+    }
+
     /**
      * Create a addition with only two terms
      *
@@ -58,8 +93,8 @@ public class Addition<T> extends Expression<T> {
      * @param b the second term
      * @return the addition object
      */
-    public static Addition<Vector> CreateVector(Expression<Vector> a, Expression<Vector> b) {
-        return new Addition<>(Arrays.asList(a, b));
+    public static Expression<Vector> CreateVector(Expression<Vector> a, Expression<Vector> b) {
+        return CreateVector(Arrays.asList(a, b));
     }
 
     /**
@@ -86,16 +121,15 @@ public class Addition<T> extends Expression<T> {
             r.add(e.calcul());
         }
 
-        // r not empty because l neither
-        //if (r.size() == 1) {
-        //    return r.get(0).invertSign();
-        //} else {
-        if (this.hasMinus()) {
-            return new Addition<>(r).invertSign();
+        if (r.size() == 1) { // Todo : this is imperfect : r.size could be > 1 but the addition created could have only one term (example if r = {1,1,-1})
+            if (this.hasMinus()) {
+                return r.get(0).clone().invertSign();
+            } else {
+                return r.get(0).clone();
+            }
+        } else {
+            return new Addition<>(r).needToInvertSign(this.hasMinus());
         }
-
-        return new Addition<>(r);
-        //}
 
     }
 
@@ -125,13 +159,7 @@ public class Addition<T> extends Expression<T> {
                 }
             }
 
-            Addition<T> a = new Addition<>(r);
-
-            if (this.hasMinus()) {
-                a.invertSign();
-            }
-
-            return a;
+            return new Addition<>(r).needToInvertSign(this.hasMinus());
         }
     }
 
@@ -160,7 +188,7 @@ public class Addition<T> extends Expression<T> {
             } else if (!first) {
                 s.append(" + ");
             }
-            s.append(e.toString());
+            s.append(e);
 
             first = false;
         }
@@ -170,5 +198,27 @@ public class Addition<T> extends Expression<T> {
         }
 
         return s.toString();
+    }
+
+    @Override
+    public Expression<T> clone() {
+        return new Addition<>(this.l).setSign(this.hasMinus());
+    }
+
+    @Override
+    public Expression<T> getPositiveClone() {
+        return new Addition<>(this.l);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Addition) {
+            if (this.isVectorial() == ((Addition<?>) o).isVectorial()) { // check if the T in the same for both additions
+                return Utils.listEqualsIgnoreOrders(this.l, ((Addition<T>) o).l)
+                        && this.hasMinus() == ((Addition<?>) o).hasMinus();
+            }
+        }
+
+        return false;
     }
 }

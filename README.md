@@ -97,15 +97,11 @@ At the end the console gives the expression of the acceleration of G in R2 compa
 
 ## ToDo
 
-1) use the invertSign/hasMinus properties. Maybe make invertSign return a clone expression
-   with the sign invert. This ensures that inverting the sign will not modify an expression use 
-   else where, but the clear disadvantage is that the same object will be viewed differently.
-   Or create a clone function (and clone before inverting sign in the code). By adding a field
-   in the clone element to refer the to father element, it would be possible to identify
-   same object by looking to the first alias.
+1) Verify if hasMinus is pass when create new object
+1) finish clone functions and equals functions
 1) Test the new architecture
 2) IntertiaMatrix class; AngularMomentum class; Torque class
-4) A review of `calcul()` function usage
+4) A review of `calcul()` function usage (especially when multiple call are made in the same function)
 5) An algorithm that simplify expressions
 3) The wiki
 5) A latex document generator

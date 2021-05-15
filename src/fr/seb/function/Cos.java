@@ -28,20 +28,20 @@ public class Cos extends Expression<Variable> {
         }
 
 
-        return new Cos(child.calcul());
+        return new Cos(child.calcul()).needToInvertSign(this.hasMinus());
     }
 
     @Override
     public Expression<Variable> derive(Space R) {
-        return Product.Create(child.derive(R), new Sin(child)).invertSign();
+        return Product.Create(child.derive(R), new Sin(child)).needToInvertSign(!this.hasMinus()); // ! this.hasMinus() because the derivative of cos if -sin
     }
 
     @Override
     public Expression<Variable> derive(int recursionDepth, Space R) {
         if (recursionDepth == 1) {
-            return Product.Create(new Derivation<>(child, R), new Sin(child)).invertSign();
+            return Product.Create(new Derivation<>(child, R), new Sin(child)).needToInvertSign(!this.hasMinus());
         } else {
-            return Product.Create(child.derive(recursionDepth - 1, R), new Sin(child)).invertSign();
+            return Product.Create(child.derive(recursionDepth - 1, R), new Sin(child)).needToInvertSign(!this.hasMinus());
         }
     }
 
@@ -56,5 +56,23 @@ public class Cos extends Expression<Variable> {
         s += String.format("\\cos(%s)", child.toString());
 
         return s;
+    }
+
+    @Override
+    public Expression<Variable> clone() {
+        return new Cos(this.child).setSign(this.hasMinus());
+    }
+
+    @Override
+    public Expression<Variable> getPositiveClone() {
+        return new Cos(this.child);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Cos) {
+            return this.child.equals(((Cos) o).child) && this.hasMinus() == ((Cos) o).hasMinus();
+        }
+        return false;
     }
 }

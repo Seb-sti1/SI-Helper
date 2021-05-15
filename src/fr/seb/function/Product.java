@@ -1,6 +1,7 @@
 package fr.seb.function;
 
 import fr.seb.Expression;
+import fr.seb.Utils;
 import fr.seb.space.Space;
 import fr.seb.vectors.Variable;
 
@@ -17,26 +18,32 @@ public class Product extends Expression<Variable> {
 
         int scalarPart = 1;
 
-        for (Expression<Variable> terms : l) {
-            if (terms.hasMinus()) {
-                terms.invertSign();
-                this.invertSign();
-            }
+        for (Expression<Variable> term : l) {
 
-            if (terms.isNull()) {
+            if (term.isNull()) {
                 this.l = Collections.singletonList(new Scalar(0));
-            } else if (terms instanceof Scalar) {
-                Scalar s = (Scalar) terms;
-
-                if (s.n == -1) {
-                    this.invertSign();
-                } else if (s.n != 1) {
-                    scalarPart *= s.n;
-                }
-            } else if (terms instanceof Product) {
-                this.l.addAll(terms.getChildren());
+                break;
             } else {
-                this.l.add(terms);
+                Expression<Variable> positiveTerm = term;
+
+                if (term.hasMinus()) {
+                    positiveTerm = term.getPositiveClone();
+                    this.invertSign();
+                }
+
+                if (positiveTerm instanceof Scalar) {
+                    Scalar s = (Scalar) positiveTerm;
+
+                    if (s.n == -1) {
+                        this.invertSign();
+                    } else if (s.n != 1) {
+                        scalarPart *= s.n;
+                    }
+                } else if (positiveTerm instanceof Product) {
+                    this.l.addAll(positiveTerm.getChildren());
+                } else {
+                    this.l.add(positiveTerm);
+                }
             }
         }
 
@@ -72,15 +79,11 @@ public class Product extends Expression<Variable> {
             r.add(termsCalculated);
         }
 
-        // r not empty because l neither
-        //if (r.size() == 1) {
-        //    return r.get(0).invertSign();
-        //} else {
-        if (this.hasMinus()) {
-            return new Product(r).invertSign();
+        if (r.size() == 1) { // Todo : this is imperfect : r.size could be > 1 but the product created could have only one term (example if r = {1,1,-1})
+            return r.get(0).clone().needToInvertSign(this.hasMinus());
+        } else {
+            return new Product(r).needToInvertSign(this.hasMinus());
         }
-        return new Product(r);
-        //}
     }
 
     @Override
@@ -121,15 +124,14 @@ public class Product extends Expression<Variable> {
             if (s.size() == 0) {
                 return new Scalar(0);
             } else {
-                Addition<Variable> a = new Addition<>(s);
-
-                if (this.hasMinus()) {
-                    a.invertSign();
-                }
-
-                return a;
+                return new Addition<>(s).needToInvertSign(this.hasMinus());
             }
         }
+    }
+
+    @Override
+    public boolean isNull() {
+        return l.get(0).isNull();
     }
 
     @Override
@@ -146,5 +148,24 @@ public class Product extends Expression<Variable> {
         }
 
         return s.substring(0, s.length() - 8);
+    }
+
+    @Override
+    public Expression<Variable> clone() {
+        return new Product(this.l).setSign(this.hasMinus());
+    }
+
+    @Override
+    public Expression<Variable> getPositiveClone() {
+        return new Product(this.l);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Product) {
+            return Utils.listEqualsIgnoreOrders(this.l, ((Product) o).l) && this.hasMinus() == ((Product) o).hasMinus();
+        }
+
+        return false;
     }
 }

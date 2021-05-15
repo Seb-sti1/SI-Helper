@@ -51,9 +51,9 @@ public class SpinningSpace implements Space {
         this.id = id;
         this.fixedPoint = fixedPoint;
 
-        x = new Vector("x", id, this);
-        y = new Vector("y", id, this);
-        z = new Vector("z", id, this);
+        x = new Vector("x", id, this, VECTOR.X);
+        y = new Vector("y", id, this, VECTOR.Y);
+        z = new Vector("z", id, this, VECTOR.Z);
 
         Vector firstSpinningFather = father.getUnitaryVector(angleFather);
 
@@ -109,7 +109,7 @@ public class SpinningSpace implements Space {
         s = String.format(Utils.projectionFigure,
                 firstSpinningFather.toString(), secondSpinningFather.toString(), father.getUnitaryVector(fixedFather),
                 getUnitaryVector(spinning).toString(), getUnitaryVector(angleR2).toString(), getUnitaryVector(secondAngle).toString(),
-                angle.toString(), angle.toString());
+                angle.toString(), angle);
 
     }
 

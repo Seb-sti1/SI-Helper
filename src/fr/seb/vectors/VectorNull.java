@@ -3,6 +3,7 @@ package fr.seb.vectors;
 import fr.seb.Expression;
 import fr.seb.space.Space;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class VectorNull extends Expression<Vector> {
@@ -11,7 +12,7 @@ public class VectorNull extends Expression<Vector> {
 
     @Override
     public List<Expression<Vector>> getChildren() {
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
@@ -35,8 +36,32 @@ public class VectorNull extends Expression<Vector> {
     }
 
     @Override
+    public Expression<Vector> clone() {
+        return new VectorNull();
+    }
+
+    @Override
+    public Expression<Vector> getPositiveClone() {
+        return new VectorNull();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof VectorNull;
+    }
+
+    @Override
+    public Expression<Vector> setSign(boolean hasMinus) {
+        return this;
+    }
+
+    @Override
+    public boolean hasMinus() {
+        return false;
+    }
+
+    @Override
     public Expression<Vector> invertSign() {
-        System.out.println("Warming inverted sign of vector null");
-        return super.invertSign();
+        return this;
     }
 }

@@ -13,12 +13,24 @@ public class Power extends Expression<Variable> {
     private final Expression<Variable> child;
 
     public Power(Expression<Variable> f, Scalar pow) throws Error {
-        this.child = f;
+        if (f.hasMinus()) {
+            this.invertSign();
+            this.child = f.getPositiveClone();
+        } else {
+            this.child = f;
+        }
+
         this.pow = pow;
     }
 
     public Power(Expression<Variable> f, int pow) {
-        this.child = f;
+        if (f.hasMinus()) {
+            this.invertSign();
+            this.child = f.getPositiveClone();
+        } else {
+            this.child = f;
+        }
+
         this.pow = new Scalar(pow);
     }
 
@@ -39,7 +51,7 @@ public class Power extends Expression<Variable> {
                 R = new Scalar(1);
                 break;
             case 1:
-                R = child;
+                R = child.clone().needToInvertSign(this.hasMinus());
                 break;
             default:
                 R = this;
@@ -49,15 +61,15 @@ public class Power extends Expression<Variable> {
 
     @Override
     public Expression<Variable> derive(Space R) {
-        return new Product(Arrays.asList(pow, child.derive(R), new Power(child, new Scalar(pow.n - 1))));
+        return new Product(Arrays.asList(pow, child.derive(R), new Power(child, new Scalar(pow.n - 1)))).needToInvertSign(this.hasMinus());
     }
 
     @Override
     public Expression<Variable> derive(int recursionDepth, Space R) {
         if (recursionDepth == 1) {
-            return new Product(Arrays.asList(pow, new Derivation<>(child, R), new Power(child, new Scalar(pow.n - 1))));
+            return new Product(Arrays.asList(pow, new Derivation<>(child, R), new Power(child, new Scalar(pow.n - 1)))).needToInvertSign(this.hasMinus());
         } else {
-            return new Product(Arrays.asList(pow, child.derive(recursionDepth - 1, R), new Power(child, new Scalar(pow.n - 1))));
+            return new Product(Arrays.asList(pow, child.derive(recursionDepth - 1, R), new Power(child, new Scalar(pow.n - 1)))).needToInvertSign(this.hasMinus());
         }
     }
 
@@ -72,6 +84,24 @@ public class Power extends Expression<Variable> {
         s += String.format("(%s)^{%s}", child.toString(), pow.toString());
 
         return s;
+    }
+
+    @Override
+    public Expression<Variable> clone() {
+        return new Power(this.child, this.pow).setSign(this.hasMinus());
+    }
+
+    @Override
+    public Expression<Variable> getPositiveClone() {
+        return new Power(this.child, this.pow);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Power) {
+            return ((Power) o).child.equals(this.child) && ((Power) o).pow == this.pow && this.hasMinus() == ((Power) o).hasMinus();
+        }
+        return false;
     }
 
 }

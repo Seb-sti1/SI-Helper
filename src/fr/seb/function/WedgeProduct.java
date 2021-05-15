@@ -14,8 +14,20 @@ public class WedgeProduct extends Expression<Vector> {
     Expression<Vector> left, right;
 
     public WedgeProduct(Expression<Vector> left, Expression<Vector> right) {
-        this.left = left;
-        this.right = right;
+        if (left.hasMinus()) {
+            this.invertSign();
+            this.left = left.getPositiveClone();
+        } else {
+            this.left = left;
+        }
+
+        if (right.hasMinus()) {
+            this.invertSign();
+            this.right = right.getPositiveClone();
+        } else {
+            this.right = right;
+        }
+
     }
 
 
@@ -35,11 +47,11 @@ public class WedgeProduct extends Expression<Vector> {
                 list.add(new WedgeProduct(child, this.right));
             }
 
-            return new Addition<>(list).calcul();
+            return Addition.CreateVector(list).needToInvertSign(this.hasMinus()).calcul();
         } else if (this.left instanceof ScalarProduct) {
             ScalarProduct pe = (ScalarProduct) this.left;
 
-            return new ScalarProduct(pe.scalaire, new WedgeProduct(pe.vecteur, this.right)).calcul();
+            return new ScalarProduct(pe.scalar, new WedgeProduct(pe.vector, this.right)).needToInvertSign(this.hasMinus()).calcul();
         }
 
         if (this.right instanceof Addition) {
@@ -51,11 +63,11 @@ public class WedgeProduct extends Expression<Vector> {
                 list.add(new WedgeProduct(this.left, child));
             }
 
-            return new Addition<>(list).calcul();
+            return Addition.CreateVector(list).needToInvertSign(this.hasMinus()).calcul();
         } else if (this.right instanceof ScalarProduct) {
             ScalarProduct pe = (ScalarProduct) this.right;
 
-            return new ScalarProduct(pe.scalaire, new WedgeProduct(pe.vecteur, this.left)).calcul();
+            return new ScalarProduct(pe.scalar, new WedgeProduct(this.left, pe.vector)).needToInvertSign(this.hasMinus()).calcul();
         }
 
         if (this.left instanceof VectorNull || this.right instanceof VectorNull ) {
@@ -66,27 +78,52 @@ public class WedgeProduct extends Expression<Vector> {
             if (this.right == this.left) {
                 return new VectorNull();
             } else {
-                return Utils.gammaRule((Vector) this.left, (Vector) this.right);
+                return Utils.gammaRule((Vector) this.left, (Vector) this.right).needToInvertSign(this.hasMinus());
             }
         }
 
         return this;
     }
 
+
     @Override
     public Expression<Vector> derive(Space R) {
         System.out.println("C'est la groooosse merde");
-        return null;
+        return null; // todo : add wedge product derivation
     }
 
     @Override
     public Expression<Vector> derive(int recursionDepth, Space R) {
         System.out.println("Si vous voyez ce message... et baaah... courrez");
-        return null;
+        return null; // todo : add wedge product derivation
     }
 
     @Override
     public String toString() {
+        if (this.hasMinus()) {
+            return String.format("- %s \\land %s", left.toString(), right.toString());
+        }
+
         return String.format("%s \\land %s", left.toString(), right.toString());
+    }
+
+    @Override
+    public Expression<Vector> clone() {
+        return new WedgeProduct(this.left, this.right).setSign(this.hasMinus());
+    }
+
+    @Override
+    public Expression<Vector> getPositiveClone() {
+        return new WedgeProduct(this.left, this.right);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (o instanceof WedgeProduct) {
+            return this.left.equals(((WedgeProduct) o).left) && this.right.equals(((WedgeProduct) o).right) && this.hasMinus() == ((WedgeProduct) o).hasMinus();
+        }
+
+        return false;
     }
 }

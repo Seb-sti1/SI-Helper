@@ -23,16 +23,18 @@ public class Sin extends Expression<Variable> {
 
     @Override
     public Expression<Variable> calcul() {
-        if (child.calcul().isNull()) {
+        Expression<Variable> childCalc = child.calcul();
+
+        if (childCalc.isNull()) {
             return new Scalar(0);
         }
 
-        return new Sin(child.calcul());
+        return new Sin(childCalc).needToInvertSign(this.hasMinus());
     }
 
     @Override
     public Expression<Variable> derive(Space R) {
-        return Product.Create(child.derive(R), new Cos(child));
+        return Product.Create(child.derive(R), new Cos(child)).needToInvertSign(this.hasMinus());
     }
 
     @Override
@@ -40,9 +42,9 @@ public class Sin extends Expression<Variable> {
         if (recursionDepth == 0) {
             return this;
         } else if (recursionDepth == 1) {
-            return Product.Create(new Derivation<>(child, R), new Cos(child));
+            return Product.Create(new Derivation<>(child, R), new Cos(child)).needToInvertSign(this.hasMinus());
         } else {
-            return Product.Create(child.derive(recursionDepth - 1, R), new Cos(child));
+            return Product.Create(child.derive(recursionDepth - 1, R), new Cos(child)).needToInvertSign(this.hasMinus());
         }
     }
 
@@ -57,5 +59,24 @@ public class Sin extends Expression<Variable> {
         s += String.format("\\sin(%s)", child.toString());
 
         return s;
+    }
+
+    @Override
+    public Expression<Variable> clone() {
+        return new Sin(this.child).setSign(this.hasMinus());
+    }
+
+    @Override
+    public Expression<Variable> getPositiveClone() {
+        return new Sin(this.child);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Sin) {
+            return this.child.equals(((Sin) o).child) && this.hasMinus() == ((Sin) o).hasMinus();
+        }
+
+        return false;
     }
 }

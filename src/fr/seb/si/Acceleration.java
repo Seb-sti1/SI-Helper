@@ -15,12 +15,12 @@ public class Acceleration {
     final Space R_fixed;
 
     public Acceleration(Point P, Space R_in, Space R_fixed) {
-        v = new Velocity(P, R_in);
+        v = new Velocity(P, R_in, R_fixed);
         this.P = P;
         this.R_fixed = R_fixed;
     }
 
     public Expression<Vector> calculate() {
-        return new Derivation<>(v.calculate(R_fixed), R_fixed);
+        return new Derivation<>(v.calculate().calcul(), R_fixed);
     }
 }

@@ -1,13 +1,15 @@
 package fr.seb;
 
+import com.sun.org.apache.xpath.internal.operations.Equals;
 import fr.seb.function.Scalar;
+import fr.seb.function.ScalarProduct;
 import fr.seb.function.WedgeProduct;
 import fr.seb.space.Space;
 import fr.seb.vectors.VectorNull;
 
 import java.util.List;
 
-public abstract class Expression<T> {
+public abstract class Expression<T> extends Equals implements Cloneable {
 
     boolean hasMinus = false;
 
@@ -36,6 +38,26 @@ public abstract class Expression<T> {
     }
 
     /**
+     * Invert the sign of the expression if needToInvert
+     */
+    public Expression<T> needToInvertSign(boolean needToInvert) {
+        if (needToInvert) {
+            return this.invertSign();
+        }
+        return this;
+    }
+
+    /**
+     * Set sign of the element
+     * Be careful this modify the object !
+     */
+    public Expression<T> setSign(boolean hasMinus) {
+        this.hasMinus = hasMinus;
+
+        return this;
+    }
+
+    /**
      * If the expression is null
      *
      * @return if the expression is null
@@ -50,7 +72,7 @@ public abstract class Expression<T> {
      * @return isVectorial
      */
     public boolean isVectorial() {
-        return this instanceof Scalar || this instanceof WedgeProduct;
+        return this instanceof ScalarProduct || this instanceof WedgeProduct;
     }
 
     /**
@@ -81,5 +103,20 @@ public abstract class Expression<T> {
      * @return latex code of the expression
      */
     public abstract String toString();
+
+    /**
+     * Create a clone
+     * @return a clone
+     */
+    public abstract Expression<T> clone();
+
+    /**
+     * Create a clone with the hasMinus property being false
+     * @return the positive clone
+     */
+    public abstract Expression<T> getPositiveClone();
+
+    @Override
+    public abstract boolean equals(Object o);
 
 }

@@ -8,57 +8,62 @@ import fr.seb.function.WedgeProduct;
 import fr.seb.space.Space;
 import fr.seb.vectors.Point;
 import fr.seb.vectors.Vector;
-import fr.seb.vectors.VectorNull;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Velocity {
 
-    Space R;
+    Space R_in;
+    Space R_fixed;
     Point P;
 
-    public Velocity(Point P, Space R) {
+    public Velocity(Point P, Space R_in, Space R_fixed) {
         this.P = P;
-        this.R = R;
+        this.R_in = R_in;
+        this.R_fixed = R_fixed;
     }
 
-    public void changePoint(Point newPoint) {
-        this.P = newPoint;
+    public List<Velocity> getDecomposition() {
+        Space R_start = R_in;
+        List<Velocity> list = new ArrayList<>();
+
+        while (R_start != R_fixed) {
+            list.add(new Velocity(P, R_start, R_start.getFather()));
+
+            R_start = R_start.getFather();
+        }
+
+        return list;
     }
 
-    public Expression<Vector> calculate(@NotNull Space R_fixed) {
-        if (R.getFathers().contains(R_fixed)) {
+    public Expression<Vector> calculate() {
+        if (R_in.getFathers().contains(R_fixed)) {
 
-            if (R.getFather() != R_fixed) {
-                Space R_start = R;
-
+            if (R_in.getFather() != R_fixed) {
                 List<Expression<Vector>> list = new ArrayList<>();
 
-
-                while (R_start != R_fixed) {
-                    list.add(new Velocity(P, R_start).calculate(R_start.getFather()));
-
-                    R_start = R_start.getFather();
+                for (Velocity vdec : getDecomposition()) {
+                    list.add(vdec.calculate());
                 }
 
-                return new Addition<>(list);
+                return Addition.CreateVector(list);
             } else {
-                if (P == R.getFixedPoint()) {
-                    if (P == R_fixed.getFixedPoint()) {
-                        return new VectorNull();
-                    } else {
-                        return new Derivation<>(Utils.getVector(R_fixed.getFixedPoint(), P), R).derive(R_fixed);
-                    }
-                } else {
-                    return Addition.CreateVector(new Velocity(R.getFixedPoint(), R).calculate(R_fixed),
-                            new WedgeProduct(Utils.getVector(R.getFixedPoint(), P), Utils.getProjectionVector(R, R_fixed)));
+                Expression<Vector> velocity = new Derivation<>(Utils.getVector(R_fixed.getFixedPoint(), R_in.getFixedPoint()), R_fixed).calcul();
+
+                if (P != R_in.getFixedPoint()) {
+                    velocity = Addition.CreateVector(velocity, new WedgeProduct(Utils.getVector(P, R_in.getFixedPoint()), Utils.getProjectionVector(R_in, R_fixed)));
                 }
+
+                return velocity;
             }
         }
         throw new Error("Impossible to calculate this velocity");
 
     }
 
+    @Override
+    public String toString() {
+        return String.format("\\overrightarrow{V_{%s \\in %s/%s}}", P.toString(), R_in.getId(), R_fixed.getId());
+    }
 }

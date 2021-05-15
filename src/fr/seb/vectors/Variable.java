@@ -4,51 +4,44 @@ import fr.seb.Expression;
 import fr.seb.function.Scalar;
 import fr.seb.space.Space;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Variable extends Expression<Variable> {
 
     private final String name;
-    private final boolean[] constant;
+    private final int successiveDerivativeNull;
     private final int derive;
 
-    public Variable(String name, boolean[] cnst) {
-        // Todo: change cnst to int (max derive)
+    /**
+     * Create a variable
+     * @param name the displayed name
+     * @param successiveDerivativeNull the number of successive derivation to get a 0 (example : 1 means the variable is constant)
+     */
+    public Variable(String name, int successiveDerivativeNull) {
         this.name = name;
-
-        if (cnst.length > 0) {
-            this.constant = cnst;
-        } else {
-            this.constant = new boolean[]{true};
-        }
-
+        this.successiveDerivativeNull = successiveDerivativeNull;
         this.derive = 0;
     }
 
-    public Variable(String name, boolean[] cnst, int derive) {
+    /**
+     * Create a variable
+     * @param name the displayed name
+     * @param successiveDerivativeNull the number of successive derivation to get a 0
+     * @param derive the number of successive derivation already applied
+     */
+    public Variable(String name, int successiveDerivativeNull, int derive) {
         this.name = name;
-
-        if (cnst.length > 0) {
-            this.constant = cnst;
-        } else {
-            this.constant = new boolean[]{true};
-        }
+        this.successiveDerivativeNull = successiveDerivativeNull;
         this.derive = derive;
     }
 
     @Override
     public Expression<Variable> derive(Space R) {
-        if (constant[0]) {
+        if (successiveDerivativeNull == 1) {
             return new Scalar(0);
         } else {
-            Variable v = new Variable(name, Arrays.copyOfRange(this.constant, 1, this.constant.length), derive + 1);
-
-            if (this.hasMinus()) {
-                v.invertSign();
-            }
-
-            return v;
+            return new Variable(name, this.successiveDerivativeNull - 1, derive + 1).setSign(this.hasMinus());
         }
     }
 
@@ -63,7 +56,7 @@ public class Variable extends Expression<Variable> {
 
     @Override
     public List<Expression<Variable>> getChildren() {
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
@@ -95,9 +88,23 @@ public class Variable extends Expression<Variable> {
     }
 
     @Override
-    public Expression<Variable> invertSign() {
-        System.out.println("Warming inverted sign of variable");
-        return super.invertSign();
+    public Expression<Variable> clone() {
+        return new Variable(this.name, this.successiveDerivativeNull, derive).setSign(this.hasMinus());
+    }
+
+    @Override
+    public Expression<Variable> getPositiveClone() {
+        return new Variable(this.name, this.successiveDerivativeNull, derive);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Variable) {
+            return ((Variable) o).name.equals(this.name) && this.derive == ((Variable) o).derive && this.successiveDerivativeNull == ((Variable) o).successiveDerivativeNull
+                    && this.hasMinus() == ((Variable) o).hasMinus();
+        }
+
+        return false;
     }
 
 }
