@@ -49,7 +49,7 @@ public class Velocity {
 
                 return Addition.CreateVector(list);
             } else {
-                Expression<Vector> velocity = new Derivation<>(Utils.getVector(R_fixed.getFixedPoint(), R_in.getFixedPoint()), R_fixed).calcul();
+                Expression<Vector> velocity = new Derivation<>(Utils.getVector(R_fixed.getFixedPoint(), R_in.getFixedPoint()), R_fixed);
 
                 if (P != R_in.getFixedPoint()) {
                     velocity = Addition.CreateVector(velocity, new WedgeProduct(Utils.getVector(P, R_in.getFixedPoint()), Utils.getProjectionVector(R_in, R_fixed)));
@@ -59,7 +59,6 @@ public class Velocity {
             }
         }
         throw new Error("Impossible to calculate this velocity");
-
     }
 
     @Override

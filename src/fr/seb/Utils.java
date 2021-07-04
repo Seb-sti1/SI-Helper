@@ -12,6 +12,7 @@ import fr.seb.vectors.VectorNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class Utils {
@@ -98,10 +99,10 @@ public class Utils {
                 Vector subAlias = alias;
 
                 while (subAlias.getExpression() instanceof Vector && !subAlias.equals(v2)) {
-                    subAlias = (Vector) alias.getExpression();
+                    subAlias = (Vector) subAlias.getExpression();
                 }
 
-                if (subAlias.equals(v2)) {// there is an easier way to calculate the wedge product
+                if (subAlias.equals(v2)) {// there is an easier way to calculateFromInertiaMatrix the wedge product
                     return gammaRule(v1, alias);
                 }
             }
@@ -119,9 +120,9 @@ public class Utils {
             Expression<Variable> v2doty = dotProduct(v2, y);
             Expression<Variable> v2dotz = dotProduct(v2, z);
 
-            Expression<Variable> resultx = Addition.CreateVariable(Product.Create(v1doty, v2dotz), new Product(Arrays.asList(new Scalar(-1), v1dotz, v2doty))).calcul();
-            Expression<Variable> resulty = Addition.CreateVariable(Product.Create(v1dotz, v2dotx), new Product(Arrays.asList(new Scalar(-1), v1dotx, v2dotz))).calcul();
-            Expression<Variable> resultz = Addition.CreateVariable(Product.Create(v1dotx, v2doty), new Product(Arrays.asList(new Scalar(-1), v1doty, v2dotx))).calcul();
+            Expression<Variable> resultx = Addition.CreateVariable(Product.Create(v1doty, v2dotz), Product.Create(v1dotz, v2doty).clone().invertSign()).calcul();
+            Expression<Variable> resulty = Addition.CreateVariable(Product.Create(v1dotz, v2dotx), Product.Create(v1dotx, v2dotz).clone().invertSign()).calcul();
+            Expression<Variable> resultz = Addition.CreateVariable(Product.Create(v1dotx, v2doty), Product.Create(v1doty, v2dotx).clone().invertSign()).calcul();
 
             return Addition.CreateVector(Arrays.asList(new ScalarProduct(resultx, x), new ScalarProduct(resulty, y), new ScalarProduct(resultz, z))).calcul();
         } else {
@@ -158,7 +159,7 @@ public class Utils {
                 list.add(dotProduct(child, other));
             }
 
-            return new Addition<>(list).needToInvertSign(add.hasMinus()).calcul();
+            return Addition.CreateVariable(list).needToInvertSign(add.hasMinus()).calcul();
         }
         // if one of the two vector is a scalar product -> put the product before and restart the dot product with the new vector
         else if (vectorLeft instanceof ScalarProduct || vectorRight instanceof ScalarProduct) {
@@ -226,9 +227,15 @@ public class Utils {
             return Addition.CreateVector(list).invertSign(); // because the calculation is done oppositely (because of getFromFather)
         } else if (B.getFathers().contains(A)) { // the other way around
             return getVector(B, A).invertSign();
+        } else if (!Collections.disjoint(A.getFathers(), B.getFathers())) {
+            List<Point> intersect = A.getFathers();
+            intersect.retainAll(B.getFathers());
+
+            Point O = intersect.get(0);
+            return Addition.CreateVector(Utils.getVector(A, O), Utils.getVector(O, B));
         }
 
-        throw new Error("Can't find a way to calculate this vector !");
+        throw new Error("Can't find a way to calculateFromInertiaMatrix this vector !");
     }
 
 

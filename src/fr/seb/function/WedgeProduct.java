@@ -82,29 +82,34 @@ public class WedgeProduct extends Expression<Vector> {
             }
         }
 
-        return this;
+        return new WedgeProduct(left.calcul(), right.calcul());
     }
 
 
     @Override
     public Expression<Vector> derive(Space R) {
-        System.out.println("C'est la groooosse merde");
-        return null; // todo : add wedge product derivation
+        return Addition.CreateVector(new WedgeProduct(this.left.derive(R), this.right),
+                new WedgeProduct(this.left, this.right.derive(R)));
     }
 
     @Override
     public Expression<Vector> derive(int recursionDepth, Space R) {
-        System.out.println("Si vous voyez ce message... et baaah... courrez");
-        return null; // todo : add wedge product derivation
+        return Addition.CreateVector(new WedgeProduct(this.left.derive(recursionDepth - 1, R), this.right),
+                new WedgeProduct(this.left, this.right.derive(recursionDepth - 1, R)));
     }
 
     @Override
     public String toString() {
         if (this.hasMinus()) {
-            return String.format("- %s \\land %s", left.toString(), right.toString());
+            return String.format("- (%s \\land %s)", left.toString(), right.toString());
         }
 
-        return String.format("%s \\land %s", left.toString(), right.toString());
+        return String.format("(%s \\land %s)", left.toString(), right.toString());
+    }
+
+    @Override
+    public boolean isNull() {
+        return this.left.isNull() || this.right.isNull();
     }
 
     @Override

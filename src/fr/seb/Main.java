@@ -1,12 +1,5 @@
 package fr.seb;
 
-import fr.seb.function.Addition;
-import fr.seb.function.Product;
-import fr.seb.function.Scalar;
-import fr.seb.vectors.Variable;
-
-import java.util.Arrays;
-
 public class Main {
 
     public static void main(String[] args) {
@@ -43,38 +36,11 @@ public class Main {
         Acceleration TRDQ2 = new Acceleration(G4, R4, R0);
 
 
-        pl(TRDQ2.calculate().calcul().calcul().calcul().calcul().calcul());
+        pl(TRDQ2.calculateFromInertiaMatrix().calcul().calcul().calcul().calcul().calcul());
         pl("");
-        pl(Utils.dotProduct(TRDQ2.calculate().calcul().calcul().calcul().calcul().calcul(), R2.getUnitaryVector(VECTOR.Z)));
+        pl(Utils.dotProduct(TRDQ2.calculateFromInertiaMatrix().calcul().calcul().calcul().calcul().calcul(), R2.getUnitaryVector(VECTOR.Z)));
 */
 
-    }
-
-    public static void tests() {
-        Variable x = new Variable("x", 1);
-        x.invertSign();
-        pl(x);
-
-        Scalar mun = new Scalar(-1);
-        Expression<Variable> p = Product.Create(x, mun);
-        pl(x);
-        pl(p);
-
-        Variable H = new Variable("H", 1);
-        Variable e = new Variable("e", 1);
-
-        Addition<Variable> a = new Addition<>(Arrays.asList(H, e, H, x));
-        pl(a);
-        Addition<Variable> b = new Addition<>(Arrays.asList(e, H, x));
-        pl(b);
-
-        Addition<Variable> c = Addition.CreateVariable(a, b);
-        pl(c);
-
-        Product d = Product.Create(a, b);
-        pl(d);
-
-        pl("");
     }
 
     public static void p(Object o) {

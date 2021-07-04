@@ -3,6 +3,7 @@ package fr.seb.function;
 import fr.seb.Expression;
 import fr.seb.space.Space;
 
+import java.util.Collections;
 import java.util.List;
 
 
@@ -24,7 +25,7 @@ public class Derivation<T> extends Expression<T> {
 
     @Override
     public List<Expression<T>> getChildren() {
-        return null;
+        return Collections.singletonList(toDerive);
     }
 
     /**
@@ -64,6 +65,10 @@ public class Derivation<T> extends Expression<T> {
         return this.toDerive.derive(R).needToInvertSign(this.hasMinus());
     }
 
+    @Override
+    public boolean isNull() {
+        return toDerive.isNull();
+    }
 
     @Override
     public boolean isVectorial() {

@@ -61,15 +61,15 @@ public class Power extends Expression<Variable> {
 
     @Override
     public Expression<Variable> derive(Space R) {
-        return new Product(Arrays.asList(pow, child.derive(R), new Power(child, new Scalar(pow.n - 1)))).needToInvertSign(this.hasMinus());
+        return Product.Create(Arrays.asList(pow, child.derive(R), new Power(child, new Scalar(pow.n - 1)))).needToInvertSign(this.hasMinus());
     }
 
     @Override
     public Expression<Variable> derive(int recursionDepth, Space R) {
         if (recursionDepth == 1) {
-            return new Product(Arrays.asList(pow, new Derivation<>(child, R), new Power(child, new Scalar(pow.n - 1)))).needToInvertSign(this.hasMinus());
+            return Product.Create(Arrays.asList(pow, new Derivation<>(child, R), new Power(child, new Scalar(pow.n - 1)))).needToInvertSign(this.hasMinus());
         } else {
-            return new Product(Arrays.asList(pow, child.derive(recursionDepth - 1, R), new Power(child, new Scalar(pow.n - 1)))).needToInvertSign(this.hasMinus());
+            return Product.Create(Arrays.asList(pow, child.derive(recursionDepth - 1, R), new Power(child, new Scalar(pow.n - 1)))).needToInvertSign(this.hasMinus());
         }
     }
 

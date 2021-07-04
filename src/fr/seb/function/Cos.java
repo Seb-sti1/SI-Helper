@@ -23,12 +23,13 @@ public class Cos extends Expression<Variable> {
 
     @Override
     public Expression<Variable> calcul() {
-        if (child.calcul().isNull()) {
+        Expression<Variable> calculatedChild = child.calcul();
+
+        if (calculatedChild.isNull()) {
             return new Scalar(1);
         }
 
-
-        return new Cos(child.calcul()).needToInvertSign(this.hasMinus());
+        return new Cos(calculatedChild).needToInvertSign(this.hasMinus());
     }
 
     @Override

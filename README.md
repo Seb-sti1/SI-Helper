@@ -6,29 +6,29 @@ This is computer algebra program, designed to help in dynamics' calculation.
 
 ### How it works
 
-An expression can be a 'variable' expression, or an 'vector' expression. In a 'variable'
-expression only variable can be manipulated, contrariwise in a 'vector' expression only
-vector can be manipulated. The nature of an expression does not change the way it works.
+An expression can be a 'variable' expression, or a 'vector' expression. In a 'variable' expression only variable can be
+manipulated, contrariwise in a 'vector' expression only vector can be manipulated. The nature of an expression does not
+change the way it works.
 
-Each expression is an interlocking of sub-expression. Each sub-expression can be a basic
-one, or an operation (called 'function'). This is achieved by creating an [interface](src/fr/seb/Expression.java)
-that have all the typical properties, and then creating basic expression and function
-that implement this interface.
+Each expression is an interlocking of sub-expression. Each sub-expression can be a basic one, or an operation (called '
+function'). This is achieved by creating an [interface](src/fr/seb/Expression.java)
+that have all the typical properties, and then creating basic expression and function that implement this interface.
 
 Currently, the [basic expression](src/fr/seb/vectors) are :
- - variable (only for 'variable' expression)
- - vector (only for 'vector' expression)
+
+- variable (only for 'variable' expression)
+- vector (only for 'vector' expression)
 
 The [functions](src/fr/seb/function) are :
- - Addition (both)
- - Derivation (both, but needs a space where the derivation is made for vectors)
- - WedgeProduct (only for vectors)
- - Product (only for variables)
- - Cos & Sin (only for variables)
- - Scalar (only for variables)
- - ScalarProduct (only for variables)
- - Power (only for variables)
- - *~~Quotient~~ (could be removed in a near future)*
+
+- Addition (both)
+- Derivation (both, but needs a space for vectors)
+- WedgeProduct (only for vectors)
+- Product (only for variables)
+- Cos & Sin (only for variables)
+- Scalar (only for variables)
+- ScalarProduct (only for variables)
+- Power (only for variables)
 
 ### Example
 
@@ -38,32 +38,26 @@ For instant, here is how the program represent : ![example formula](doc/image/re
 
 ![what the program see](doc/image/readme-example1-2.png)
 
-### Advantages & Disadvantages
+### Why things are like that
 
-There is a few advantages to represent things with this system. First, every calculation can
-be done recursively by iterating throw each node. Also, by making the calculation process
-recursive, it's possible to show calculation steps to the user (by limiting the recursion
-depth).
-
-_This part needs to be reviewed_\
-However, there is a big counterpart to these advantages : a same expression have multiple
-way to be decomposed in sub-expression by the program, making it difficult to compare and
-simplify expressions. This is not obvious in the example above but with, for example,
-"a \times b \times c" the program can see it as "a \times (b \times c)" but also as 
-"(a \times b) \times c".
+There are few advantages to represent things with this system. First, every calculation can be done recursively by
+iterating throw each node. Also, by making the calculation process recursive, it's possible to **show calculation steps
+to the user** (by limiting the recursion depth). Also, by making Addition and Product being trees (but not binary trees)
+the program sees "a \times (b \times c)" as the same as "(a \times b) \times c" (which create to easily simplify
+expression).
 
 ## Basic use (an example)
 
-_This example was made on a previous version, there are minor differences._
+_This example was made on a previous version, there are minor differences to make it works._
 
 ```java
 // initiate two variables for the angle
-Variable alpha = new Variable("\\alpha", new boolean[]{false, false, false, true});
-Variable beta = new Variable("\\beta", new boolean[]{false, false, false, true});
+Variable alpha = new Variable("\\alpha", 3);
+Variable beta = new Variable("\\beta", 3);
 
 // initiate two distances
-Variable a = new Variable("a", new boolean[]{true});
-Variable b = new Variable("b", new boolean[]{true});
+Variable a = new Variable("a", 1);
+Variable b = new Variable("b", 1);
 
 Space R0 = new FixedSpace(); // the main space
 
@@ -97,10 +91,10 @@ At the end the console gives the expression of the acceleration of G in R2 compa
 
 ## ToDo
 
-1) Verify if hasMinus is pass when create new object
-1) finish clone functions and equals functions
-1) Test the new architecture
-2) IntertiaMatrix class; AngularMomentum class; Torque class
+1) Verify if hasMinus is pass when create new object (To check)
+1) finish clone functions and equals functions (To check)
+1) Test the new architecture (To check)
+2) IntertiaMatrix class; AngularMomentum class; Torque class (To check)
 4) A review of `calcul()` function usage (especially when multiple call are made in the same function)
 5) An algorithm that simplify expressions
 3) The wiki
@@ -110,10 +104,10 @@ At the end the console gives the expression of the acceleration of G in R2 compa
 
 ## Contributions
 
-Contributions/Comments/Suggestions are welcome. I don't know everything, and I
-might have made overcomplicated or not optimised things. The only thing that you need to
-think when contributing is that I want this program to be able to do the calculations and 
-display the steps.
+Contributions/Comments/Suggestions are welcome. I don't know everything, and I might have made overcomplicated or not
+optimised things. The only thing that you need to think when contributing is that I want this program to be able to do
+the calculations and display the steps.\
+_Thank_.
 
 ## Thanks
 - [Moxinilian](https://github.com/Moxinilian) *for the help and advices* 

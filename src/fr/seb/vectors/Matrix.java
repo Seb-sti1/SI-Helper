@@ -124,7 +124,7 @@ public class Matrix {
      * @throws OperationNotSupportedException the number of column or line must allow the operation
      */
     public Matrix product(Matrix m) throws OperationNotSupportedException {
-        if (m.n != this.p || m.p != this.n) {
+        if (m.n != this.p) {
             throw new OperationNotSupportedException();
         }
 
@@ -139,7 +139,7 @@ public class Matrix {
                     l.add(Product.Create(this.get(i, k), m.get(k, j)));
                 }
 
-                result.set(i, j, new Addition<>(l));
+                result.set(i, j, Addition.CreateVariable(l));
             }
         }
         return result;
@@ -160,12 +160,14 @@ public class Matrix {
             }
 
             if (i != n - 1) {
-                latex.append("//");
+                latex.append("\\\\");
             }
         }
         latex.append(String.format("\\end{%s}", this.matrix_env));
 
         return latex.toString();
     }
+
+    // todo equals
 
 }

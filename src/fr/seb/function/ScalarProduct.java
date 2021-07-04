@@ -41,7 +41,7 @@ public class ScalarProduct extends Expression<Vector> {
             vec = ((ScalarProduct) vec).vector;
         }
 
-        this.scalar = new Product(scalars);
+        this.scalar = Product.Create(scalars);
         this.vector = vec;
     }
 

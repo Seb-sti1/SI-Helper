@@ -11,46 +11,76 @@ import java.util.Collections;
 import java.util.List;
 
 public class Product extends Expression<Variable> {
-    List<Expression<Variable>> l;
 
-    public Product(List<Expression<Variable>> l) {
-        this.l = new ArrayList<>();
+    private final List<Expression<Variable>> l;
 
+    private Product(List<Expression<Variable>> l) {
+        this.l = l;
+    }
+
+    /**
+     * Clean a list of Expression to create a clean product
+     * - Only one scalar
+     * - all sub elements are positive
+     * Todo : use power to simplify expression
+     *
+     * @param list the list to clean
+     * @return a clean list of element. The sign is on the first element
+     */
+    private static cleanList cleanListOfExpressions(List<Expression<Variable>> list) {
+        List<Expression<Variable>> r = new ArrayList<>();
+
+        boolean hasMinus = false;
         int scalarPart = 1;
 
-        for (Expression<Variable> term : l) {
-
+        for (Expression<Variable> term : list) {
             if (term.isNull()) {
-                this.l = Collections.singletonList(new Scalar(0));
-                break;
+                return new cleanList(Collections.singletonList(new Scalar(0)), false); // if a term is null then the product too
             } else {
                 Expression<Variable> positiveTerm = term;
 
-                if (term.hasMinus()) {
-                    positiveTerm = term.getPositiveClone();
-                    this.invertSign();
+                if (term.hasMinus()) { // remove the signe
+                    positiveTerm = term.getPositiveClone(); // take a clone only if needed
+                    hasMinus = !hasMinus;
                 }
 
                 if (positiveTerm instanceof Scalar) {
-                    Scalar s = (Scalar) positiveTerm;
-
-                    if (s.n == -1) {
-                        this.invertSign();
-                    } else if (s.n != 1) {
-                        scalarPart *= s.n;
-                    }
+                    scalarPart *= ((Scalar) positiveTerm).n; // Scalar.n is positive by construction
                 } else if (positiveTerm instanceof Product) {
-                    this.l.addAll(positiveTerm.getChildren());
+                    cleanList cList = cleanListOfExpressions(positiveTerm.getChildren());
+
+                    hasMinus = hasMinus ^ cList.hasMinus; // there is a minus only one the two (exactly) has one
+                    r.addAll(cList.l);
                 } else {
-                    this.l.add(positiveTerm);
+                    r.add(positiveTerm);
                 }
             }
         }
 
-        if (scalarPart != 1 || this.l.size() == 0) {
-            this.l.add(new Scalar(scalarPart));
+        if (r.size() == 0) {
+            return new cleanList(Collections.singletonList(new Scalar(scalarPart)), false);
+        } else {
+            if (scalarPart != 1) {
+                r.add(new Scalar(scalarPart));
+            }
+            return new cleanList(r, hasMinus);
         }
+    }
 
+    /**
+     * Create a product with a list of term
+     *
+     * @param l the list of term
+     * @return the product
+     */
+    public static Expression<Variable> Create(List<Expression<Variable>> l) {
+        cleanList cList = cleanListOfExpressions(l);
+
+        if (cList.l.size() == 1) {
+            return cList.l.get(0).clone().needToInvertSign(cList.hasMinus);
+        } else {
+            return new Product(cList.l).needToInvertSign(cList.hasMinus);
+        }
     }
 
     /**
@@ -58,15 +88,10 @@ public class Product extends Expression<Variable> {
      *
      * @param a the first term
      * @param b the second term
-     * @return the product object
+     * @return the product
      */
-    public static Product Create(Expression<Variable> a, Expression<Variable> b) {
-        return new Product(Arrays.asList(a, b));
-    }
-
-    @Override
-    public List<Expression<Variable>> getChildren() {
-        return this.l;
+    public static Expression<Variable> Create(Expression<Variable> a, Expression<Variable> b) {
+        return Create(Arrays.asList(a, b));
     }
 
     @Override
@@ -79,16 +104,18 @@ public class Product extends Expression<Variable> {
             r.add(termsCalculated);
         }
 
-        if (r.size() == 1) { // Todo : this is imperfect : r.size could be > 1 but the product created could have only one term (example if r = {1,1,-1})
-            return r.get(0).clone().needToInvertSign(this.hasMinus());
+        cleanList cList = cleanListOfExpressions(r);
+
+        if (cList.l.size() == 1) {
+            return cList.l.get(0).clone().needToInvertSign(this.hasMinus() ^ cList.hasMinus);
         } else {
-            return new Product(r).needToInvertSign(this.hasMinus());
+            return new Product(cList.l).needToInvertSign(this.hasMinus());
         }
     }
 
     @Override
-    public Expression<Variable> derive(Space R) {
-        return derive(-1, R);
+    public List<Expression<Variable>> getChildren() {
+        return this.l;
     }
 
     @Override
@@ -117,21 +144,44 @@ public class Product extends Expression<Variable> {
                     }
                     p.add(derivTerms);
 
-                    s.add(new Product(p));
+                    s.add(Create(p));
                 }
             }
 
             if (s.size() == 0) {
                 return new Scalar(0);
             } else {
-                return new Addition<>(s).needToInvertSign(this.hasMinus());
+                return Addition.CreateVariable(s).needToInvertSign(this.hasMinus());
             }
         }
     }
 
     @Override
+    public Expression<Variable> derive(Space R) {
+        return derive(-1, R);
+    }
+
+    @Override
     public boolean isNull() {
-        return l.get(0).isNull();
+        for (Expression<Variable> ele : l) {
+            if (ele.isNull()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * To carry the information of the elements and the sign
+     */
+    private static class cleanList {
+        public final List<Expression<Variable>> l;
+        public final boolean hasMinus;
+
+        public cleanList(List<Expression<Variable>> l, boolean hasMinus) {
+            this.l = l;
+            this.hasMinus = hasMinus;
+        }
     }
 
     @Override
