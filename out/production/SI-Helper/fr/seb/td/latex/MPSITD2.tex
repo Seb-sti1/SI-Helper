@@ -1,0 +1,77 @@
+\documentclass{article}
+
+\usepackage{fontspec}
+\setmainfont{Times New Roman} % police d'écriture
+
+\usepackage{tikz}
+\usepackage{amsmath}
+
+\usepackage[francais]{babel}
+
+\usepackage[a4paper,left=0.2cm,right=0.2cm,top=0.2cm,bottom=0.2cm]{geometry}
+
+% Document
+\begin{document}
+    \begin{tikzpicture}
+        \node (x) at (3.2,0) {$\overrightarrow{y_{0}}$};
+        \node (y) at (0,3.2) {$\overrightarrow{z_{0}}$};
+        \node (z) at (-0.2,-0.5) {$\overrightarrow{x_{0}} = \overrightarrow{x_{1}}$};
+
+        \node (xone) at (3.2,1.1) {$\overrightarrow{y_{1}}$};
+        \node (yone) at (-1.1,3.2) {$\overrightarrow{z_{1}}$};
+
+
+        \draw[thick, ->] (3,0.1) arc (0:15:3);
+        \node (alphab) at (3.2,0.5) {$\alpha$};
+        \draw[thick, ->, rotate=90] (3,0.1) arc (0:16:3);
+        \node (alphat) at (-0.5,3.2) {$\alpha$};
+
+        \draw[->,line width=0.03cm] (0,0) to (3,0);
+        \draw[->,line width=0.03cm] (0,0) to (0,3);
+
+        \draw[->,line width=0.03cm] (0,0) to (2.85,0.95);
+        \draw[->,line width=0.03cm] (0,0) to (-0.95,2.85);
+
+        \node[circle,fill,color=white] (a) at (0,0) {};
+
+        \node[circle,draw,line width=1pt] (a) at (0,0) {};
+        \node[circle,fill,inner sep=1pt] (b) at (0, 0) {};
+    \end{tikzpicture}
+
+    \begin{tikzpicture}
+        \node (x) at (3.2,0) {$\overrightarrow{x_{1}}$};
+        \node (y) at (0,3.2) {$\overrightarrow{y_{1}}$};
+        \node (z) at (-0.2,-0.5) {$\overrightarrow{z_{1}} = \overrightarrow{z_{2}}$};
+
+        \node (xone) at (3.2,1.1) {$\overrightarrow{x_{2}}$};
+        \node (yone) at (-1.1,3.2) {$\overrightarrow{y_{2}}$};
+
+
+        \draw[thick, ->] (3,0.1) arc (0:15:3);
+        \node (alphab) at (3.2,0.5) {$\beta$};
+        \draw[thick, ->, rotate=90] (3,0.1) arc (0:16:3);
+        \node (alphat) at (-0.5,3.2) {$\beta$};
+
+        \draw[->,line width=0.03cm] (0,0) to (3,0);
+        \draw[->,line width=0.03cm] (0,0) to (0,3);
+
+        \draw[->,line width=0.03cm] (0,0) to (2.85,0.95);
+        \draw[->,line width=0.03cm] (0,0) to (-0.95,2.85);
+
+        \node[circle,fill,color=white] (a) at (0,0) {};
+
+        \node[circle,draw,line width=1pt] (a) at (0,0) {};
+        \node[circle,fill,inner sep=1pt] (b) at (0, 0) {};
+
+
+    \end{tikzpicture}
+
+
+
+    $\left.\dfrac{d (b \times \dot{\beta} \cdot \overrightarrow{y_{2}} + b \times \dot{\alpha} \times \sin(\beta) \cdot \overrightarrow{z_{1}} + a \times \dot{\alpha} \cdot \overrightarrow{z_{1}})}{dt}\right|_{R_{0}}$
+
+    $(b \times \ddot{\beta} \cdot \overrightarrow{y_{2}} + b \times \dot{\beta} \cdot (\dot{\beta} \cdot \overrightarrow{z_{2}} + \dot{\alpha} \cdot \overrightarrow{x_{1}}) \land \overrightarrow{y_{2}} + (b \times \sin(\beta) \times \ddot{\alpha} + b \times \dot{\alpha} \times \dot{\beta} \times \cos(\beta)) \cdot \overrightarrow{z_{1}} + b \times \dot{\alpha} \times \sin(\beta) \cdot \dot{\alpha} \cdot \overrightarrow{x_{1}} \land \overrightarrow{z_{1}} + a \times \ddot{\alpha} \cdot \overrightarrow{z_{1}} + a \times \dot{\alpha} \cdot \dot{\alpha} \cdot \overrightarrow{x_{1}} \land \overrightarrow{z_{1}})$
+
+    $(b \times \ddot{\beta} \cdot \overrightarrow{y_{2}} + b \times \dot{\beta} \cdot ( - \dot{\beta} \cdot \overrightarrow{x_{2}} + \dot{\alpha} \times \cos(\beta) \cdot \overrightarrow{z_{1}}) + (b \times \sin(\beta) \times \ddot{\alpha} + b \times \dot{\alpha} \times \dot{\beta} \times \cos(\beta)) \cdot \overrightarrow{z_{1}} - b \times \dot{\alpha} \times \sin(\beta) \times \dot{\alpha} \cdot \overrightarrow{y_{1}} + a \times \ddot{\alpha} \cdot \overrightarrow{z_{1}} - a \times \dot{\alpha} \times \dot{\alpha} \cdot \overrightarrow{y_{1}})$
+
+\end{document}

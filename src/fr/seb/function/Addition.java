@@ -29,7 +29,7 @@ public class Addition<T> extends Expression<T> {
      * @return a clean list
      */
     protected static <U> List<Expression<U>> cleanListOfExpressions(List<Expression<U>> l) {
-        List<Expression<U>> r = new ArrayList<>();
+        List<Expression<U>> r = new ArrayList<>(); 
 
         for (Expression<U> ele : l) {
             if (!ele.isNull()) {
