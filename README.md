@@ -92,13 +92,13 @@ At the end the console gives the expression of the acceleration of G in R2 compa
 ## ToDo
 
 1) Verify if hasMinus is pass when create new object (To check)
-1) finish clone functions and equals functions (To check)
-1) Test the new architecture (To check)
-2) IntertiaMatrix class; AngularMomentum class; Torque class (To check)
-4) A review of `calcul()` function usage (especially when multiple call are made in the same function)
-5) An algorithm that simplify expressions
-3) The wiki
-5) A latex document generator
+2) finish clone functions and equals functions (To check)
+3) Test the new architecture (To check)
+4) IntertiaMatrix class; AngularMomentum class; Torque class (To check)
+5) A review of `calcul()` function usage (especially when multiple call are made in the same function)
+6) An algorithm that simplify expressions
+7) The wiki
+8) A latex document generator
 
 
 

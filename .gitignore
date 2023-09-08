@@ -26,4 +26,10 @@ hs_err_pid*
 
 .idea/
 doc/readme-latex/out/
-# /src/fr/seb/td/
+out/
+*.iml
+
+.gradle/
+gradle/
+gradlew
+gradlew.bat

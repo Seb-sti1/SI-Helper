@@ -1,6 +1,5 @@
 package fr.seb;
 
-import com.sun.org.apache.xpath.internal.operations.Equals;
 import fr.seb.function.Scalar;
 import fr.seb.function.ScalarProduct;
 import fr.seb.function.WedgeProduct;
@@ -9,7 +8,7 @@ import fr.seb.vectors.VectorNull;
 
 import java.util.List;
 
-public abstract class Expression<T> extends Equals implements Cloneable {
+public abstract class Expression<T> implements Cloneable {
 
     boolean hasMinus = false;
 

@@ -1,24 +1,35 @@
 package fr.seb;
 
+import fr.seb.function.Addition;
+import fr.seb.function.Scalar;
+import fr.seb.function.ScalarProduct;
+import fr.seb.si.Acceleration;
+import fr.seb.space.FixedSpace;
+import fr.seb.space.Space;
+import fr.seb.space.Space.VECTOR;
+import fr.seb.space.SpinningSpace;
+import fr.seb.vectors.Point;
+import fr.seb.vectors.Variable;
+
 public class Main {
 
     public static void main(String[] args) {
 
 
-        /*
-        Variable alpha = new Variable("\\alpha", new boolean[]{false, false, false, true});
-        Variable beta = new Variable("\\beta", new boolean[]{false, false, false, true});
 
-        Variable H = new Variable("H", new boolean[]{true});
-        Variable e = new Variable("e", new boolean[]{true});
-        Variable L = new Variable("L", new boolean[]{true});
-        Variable X = new Variable("X", new boolean[]{false, false, false, false, true});
-        Variable Z = new Variable("Z", new boolean[]{false, false, false, false, true});
+        Variable alpha = new Variable("\\alpha", 4);
+        Variable beta = new Variable("\\beta", 4);
+
+        Variable H = new Variable("H", 1);
+        Variable e = new Variable("e", 1);
+        Variable L = new Variable("L", 1);
+        Variable X = new Variable("X", 5);
+        Variable Z = new Variable("Z", 5);
 
         Space R0 = new FixedSpace();
         Space R1 = new SpinningSpace(R0, 1, R0.getFixedPoint(), VECTOR.Z, VECTOR.Z, alpha, VECTOR.X, VECTOR.X);
 
-        Expression<Variable> a = new Addition<>(Arrays.asList(L, e));
+        Expression<Variable> a = Addition.CreateVariable(L, e);
 
         Point A = new Point("A", R0.getFixedPoint(), Addition.CreateVector(new ScalarProduct(H, R0.getUnitaryVector(VECTOR.Z)),
                                                                         new ScalarProduct(e, R1.getUnitaryVector(VECTOR.Y))));
@@ -35,11 +46,12 @@ public class Main {
 
         Acceleration TRDQ2 = new Acceleration(G4, R4, R0);
 
+        pl(TRDQ2.calculate());
 
-        pl(TRDQ2.calculateFromInertiaMatrix().calcul().calcul().calcul().calcul().calcul());
-        pl("");
-        pl(Utils.dotProduct(TRDQ2.calculateFromInertiaMatrix().calcul().calcul().calcul().calcul().calcul(), R2.getUnitaryVector(VECTOR.Z)));
-*/
+        //pl(TRDQ2.calculateFromInertiaMatrix().calcul().calcul().calcul().calcul().calcul());
+        //pl("");
+        //pl(Utils.dotProduct(TRDQ2.calculateFromInertiaMatrix().calcul().calcul().calcul().calcul().calcul(), R2.getUnitaryVector(VECTOR.Z)));
+
 
     }
 

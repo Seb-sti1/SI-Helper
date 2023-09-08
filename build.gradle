@@ -1,0 +1,29 @@
+plugins {
+    id("java")
+}
+
+
+group = "fr.seb"
+version = "1.0-beta"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    "org.junit.jupiter:junit-jupiter-api:5.7.0"
+}
+
+jar {
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+
+    manifest {
+        attributes(
+                'Main-Class': 'fr.seb.Main',
+                'Implementation-Version': version
+        )
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
