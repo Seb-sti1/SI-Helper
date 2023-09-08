@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2023. Seb-sti1. See LICENSE.
+ */
+
 package fr.seb.function;
 
 import fr.seb.Expression;

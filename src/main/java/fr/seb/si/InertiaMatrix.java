@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021. Sébastien Kerbourc'h. See LICENSE for more information.
+ * Copyright (c) 2021-2023. Seb-sti1. See LICENSE.
  */
 
 package fr.seb.si;
