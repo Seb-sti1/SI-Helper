@@ -2,6 +2,11 @@
 
 This is computer algebra program, designed to help in dynamics' calculation.
 
+**_This project would have needed to be written with a test driven development approach, but it was not. Having 
+a limited amount of time, and given the amount of work needed to add the tests and fix some tiny bugs with large
+impact on the quality of the software, I decided to archive it. It's extremely unlikely that I will work on it again,
+especially because there are other projects that can do similar things, and that are better maintained._**
+
 ## Process architecture
 
 ### How it works
@@ -94,7 +99,7 @@ At the end the console gives the expression of the acceleration of G in R2 compa
 1) Verify if hasMinus is pass when create new object (To check)
 2) finish clone functions and equals functions (To check)
 3) Test the new architecture (To check)
-4) IntertiaMatrix class; AngularMomentum class; Torque class (To check)
+4) InertiaMatrix class; AngularMomentum class; Torque class (To check)
 5) A review of `calcul()` function usage (especially when multiple call are made in the same function)
 6) An algorithm that simplify expressions
 7) The wiki
@@ -107,7 +112,7 @@ At the end the console gives the expression of the acceleration of G in R2 compa
 Contributions/Comments/Suggestions are welcome. I don't know everything, and I might have made overcomplicated or not
 optimised things. The only thing that you need to think when contributing is that I want this program to be able to do
 the calculations and display the steps.\
-_Thank_.
+_Thanks_.
 
 ## Thanks
 - [Moxinilian](https://github.com/Moxinilian) *for the help and advices* 
